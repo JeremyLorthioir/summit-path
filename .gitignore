@@ -12,3 +12,9 @@ build/
 .idea/
 .vscode/
 .env
+
+# GitHub Copilot shared markdown (auto-added by tool_agentic)
+/.copilot/
+/.github/
+/.vscode/
+/AGENTS.md
