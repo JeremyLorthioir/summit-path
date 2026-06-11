@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SummitPath | UTMB 2024 Course Planning</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for data-heavy table */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline": "#707974",
+                      "inverse-primary": "#99d3ba",
+                      "surface": "#f8f9ff",
+                      "on-error": "#ffffff",
+                      "primary": "#003426",
+                      "surface-bright": "#f8f9ff",
+                      "on-secondary-fixed-variant": "#364768",
+                      "surface-dim": "#cbdbf5",
+                      "on-primary": "#ffffff",
+                      "surface-tint": "#306855",
+                      "on-surface-variant": "#404944",
+                      "on-tertiary-container": "#e69e96",
+                      "tertiary": "#4d1f1b",
+                      "primary-fixed": "#b4efd6",
+                      "inverse-surface": "#213145",
+                      "on-tertiary-fixed-variant": "#6c3832",
+                      "on-background": "#0b1c30",
+                      "secondary-fixed-dim": "#b6c6ef",
+                      "on-primary-fixed-variant": "#15503e",
+                      "surface-container-highest": "#d3e4fe",
+                      "primary-fixed-dim": "#99d3ba",
+                      "on-primary-fixed": "#002117",
+                      "tertiary-fixed-dim": "#ffb4ab",
+                      "surface-container-low": "#eff4ff",
+                      "on-secondary-container": "#4b5b7e",
+                      "on-primary-container": "#82bba4",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-variant": "#d3e4fe",
+                      "inverse-on-surface": "#eaf1ff",
+                      "error-container": "#ffdad6",
+                      "on-error-container": "#93000a",
+                      "outline-variant": "#bfc9c3",
+                      "surface-container-high": "#dce9ff",
+                      "on-surface": "#0b1c30",
+                      "tertiary-container": "#68342f",
+                      "tertiary-fixed": "#ffdad6",
+                      "secondary-container": "#c4d4fd",
+                      "on-secondary": "#ffffff",
+                      "secondary-fixed": "#d8e2ff",
+                      "on-tertiary-fixed": "#370e0b",
+                      "surface-container": "#e5eeff",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed": "#081b3a",
+                      "background": "#f8f9ff",
+                      "primary-container": "#0f4c3a",
+                      "error": "#ba1a1a",
+                      "secondary": "#4e5e81"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-desktop": "32px",
+                      "stack-md": "16px",
+                      "stack-sm": "8px",
+                      "base": "4px",
+                      "touch-target-min": "48px",
+                      "stack-lg": "24px",
+                      "margin-mobile": "16px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "numeric-data": ["Inter"],
+                      "label-caps": ["Inter"],
+                      "display-metrics": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Inter"]
+              },
+              "fontSize": {
+                      "numeric-data": ["24px", {"lineHeight": "1", "fontWeight": "600"}],
+                      "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "display-metrics": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "headline-md": ["20px", {"lineHeight": "1.3", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="bg-surface border-b border-outline-variant flex justify-between items-center w-full px-margin-desktop h-touch-target-min fixed top-0 z-50">
+<div class="font-headline-md text-headline-md text-primary font-extrabold tracking-tight">SummitPath</div>
+<nav class="hidden md:flex gap-stack-lg">
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors cursor-pointer active:opacity-80" href="#">Dashboard</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md transition-colors cursor-pointer active:opacity-80" href="#">Segments</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors cursor-pointer active:opacity-80" href="#">Nutrition</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors cursor-pointer active:opacity-80" href="#">Results</a>
+</nav>
+<div class="flex items-center gap-stack-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary p-2 cursor-pointer transition-colors" data-icon="file_download">file_download</button>
+<button class="font-body-md text-on-surface-variant px-4 py-2 hover:text-primary transition-colors cursor-pointer">Export JSON</button>
+<button class="font-body-md bg-primary text-on-primary px-6 py-2 rounded-lg font-bold hover:opacity-90 transition-all cursor-pointer">Save</button>
+</div>
+</header>
+<div class="flex pt-touch-target-min h-screen">
+<!-- Side Navigation Bar -->
+<aside class="fixed left-0 top-0 bottom-0 flex flex-col p-stack-md bg-surface-container-low border-r border-outline-variant h-full w-64 pt-20">
+<div class="mb-stack-lg px-4">
+<h1 class="font-headline-md text-headline-md text-primary">Race Planner</h1>
+<p class="text-on-surface-variant text-label-caps uppercase tracking-wider">UTMB Preparation</p>
+</div>
+<nav class="flex-1 flex flex-col gap-base">
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-caps">DASHBOARD</span>
+</a>
+<a class="flex items-center gap-stack-md bg-secondary-container text-on-secondary-container rounded-lg px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="altitude">altitude</span>
+<span class="font-label-caps">SEGMENTS</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+<span class="font-label-caps">NUTRITION</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span class="font-label-caps">RESULTS</span>
+</a>
+</nav>
+<button class="mt-stack-lg w-full py-4 bg-primary text-on-primary rounded-lg font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                Add Segment
+            </button>
+<div class="mt-auto border-t border-outline-variant pt-stack-md">
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-2 hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-caps">SETTINGS</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-2 hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-caps">SUPPORT</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 flex flex-col h-full bg-surface-container-lowest">
+<!-- Header Section -->
+<section class="p-margin-desktop bg-surface-bright flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary">UTMB 2024</h2>
+<div class="flex gap-stack-lg mt-base">
+<div class="flex flex-col">
+<span class="text-label-caps text-on-surface-variant">TOTAL DISTANCE</span>
+<span class="font-numeric-data text-numeric-data">171 km</span>
+</div>
+<div class="flex flex-col">
+<span class="text-label-caps text-on-surface-variant">TOTAL D+</span>
+<span class="font-numeric-data text-numeric-data text-tertiary">10,040 m</span>
+</div>
+<div class="flex flex-col">
+<span class="text-label-caps text-on-surface-variant">TOTAL D-</span>
+<span class="font-numeric-data text-numeric-data">10,040 m</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-stack-md bg-surface-container-low p-stack-sm rounded-xl border border-outline-variant">
+<div class="px-4 text-center">
+<span class="block text-label-caps text-on-surface-variant">TARGET TIME</span>
+<span class="font-numeric-data text-numeric-data">32:45:00</span>
+</div>
+<div class="w-px h-10 bg-outline-variant"></div>
+<div class="px-4 text-center">
+<span class="block text-label-caps text-on-surface-variant">EST. PACE</span>
+<span class="font-numeric-data text-numeric-data">11:30 min/km</span>
+</div>
+</div>
+</section>
+<!-- Table Container -->
+<div class="flex-1 px-margin-desktop pb-32 overflow-hidden flex flex-col">
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden flex flex-col">
+<!-- Custom Excel-style Header -->
+<div class="grid grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_1fr_1fr_1fr_1.2fr_0.8fr_2fr] bg-surface-container-highest border-b border-outline-variant">
+<div class="p-4 font-label-caps text-on-secondary-fixed-variant border-r border-outline-variant">Segment</div>
+<div class="p-4 font-label-caps text-on-secondary-fixed-variant border-r border-outline-variant text-center">Dist (km)</div>
+<div class="p-4 font-label-caps text-on-secondary-fixed-variant border-r border-outline-variant text-center">D+ (m)</div>
+<div class="p-4 font-label-caps text-on-secondary-fixed-variant border-r border-outline-variant text-center">D- (m)</div>
+<div class="p-4 font-label-caps text-on-secondary-fixed-variant border-r border-outline-variant text-center">km-effort</div>
+<div class="p-4 font-label-caps text-on-secondary-fixed-variant border-r border-outline-variant text-center">Temps Est.</div>
+<div class="p-4 font-label-caps text-on-secondary-fixed-variant border-r border-outline-variant text-center">Cumulé</div>
+<div class="p-4 font-label-caps text-on-secondary-fixed-variant border-r border-outline-variant text-center">Heure de passage</div>
+<div class="p-4 font-label-caps text-on-secondary-fixed-variant border-r border-outline-variant text-center">Barrière</div>
+<div class="p-4 font-label-caps text-on-secondary-fixed-variant">Remarques</div>
+</div>
+<!-- Scrollable Body -->
+<div class="flex-1 overflow-y-auto custom-scrollbar bg-surface-container-lowest">
+<!-- Row 1 -->
+<div class="grid grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_1fr_1fr_1fr_1.2fr_0.8fr_2fr] border-b border-outline-variant hover:bg-surface-container transition-colors group">
+<div class="p-2 border-r border-outline-variant">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 font-bold p-2 h-full text-on-surface" type="text" value="Chamonix - Les Houches"/>
+</div>
+<div class="p-2 border-r border-outline-variant">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 text-center p-2 h-full font-numeric-data" type="number" value="7.9"/>
+</div>
+<div class="p-2 border-r border-outline-variant">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 text-center p-2 h-full font-numeric-data" type="number" value="100"/>
+</div>
+<div class="p-2 border-r border-outline-variant">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 text-center p-2 h-full font-numeric-data" type="number" value="50"/>
+</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data text-on-surface-variant">9.1</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data">0:45</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data">0:45</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data flex items-center justify-center gap-2">
+                                18:45
+                                <span class="px-2 py-0.5 bg-primary-container text-on-primary-container text-[10px] font-bold rounded">AHEAD</span>
+</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data text-on-surface-variant">19:30</div>
+<div class="p-2">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 p-2 h-full italic text-on-surface-variant" placeholder="Add notes..." type="text"/>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_1fr_1fr_1fr_1.2fr_0.8fr_2fr] border-b border-outline-variant hover:bg-surface-container transition-colors group">
+<div class="p-2 border-r border-outline-variant">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 font-bold p-2 h-full text-on-surface" type="text" value="Les Houches - Saint Gervais"/>
+</div>
+<div class="p-2 border-r border-outline-variant">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 text-center p-2 h-full font-numeric-data" type="number" value="13.1"/>
+</div>
+<div class="p-2 border-r border-outline-variant">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 text-center p-2 h-full font-numeric-data" type="number" value="840"/>
+</div>
+<div class="p-2 border-r border-outline-variant">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 text-center p-2 h-full font-numeric-data" type="number" value="760"/>
+</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data text-on-surface-variant">25.3</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data">2:15</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data">3:00</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data flex items-center justify-center gap-2">
+                                21:00
+                                <span class="px-2 py-0.5 bg-primary-container text-on-primary-container text-[10px] font-bold rounded">AHEAD</span>
+</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data text-on-surface-variant">21:45</div>
+<div class="p-2">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 p-2 h-full italic text-on-surface-variant" type="text" value="Ascent to Le Délevret, fast descent."/>
+</div>
+</div>
+<!-- Row 3 (Simulated Late State) -->
+<div class="grid grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_1fr_1fr_1fr_1.2fr_0.8fr_2fr] border-b border-outline-variant hover:bg-surface-container transition-colors group">
+<div class="p-2 border-r border-outline-variant">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 font-bold p-2 h-full text-on-surface" type="text" value="Saint Gervais - Les Contamines"/>
+</div>
+<div class="p-2 border-r border-outline-variant">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 text-center p-2 h-full font-numeric-data" type="number" value="10.2"/>
+</div>
+<div class="p-2 border-r border-outline-variant">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 text-center p-2 h-full font-numeric-data" type="number" value="380"/>
+</div>
+<div class="p-2 border-r border-outline-variant">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 text-center p-2 h-full font-numeric-data" type="number" value="230"/>
+</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data text-on-surface-variant">15.1</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data">1:30</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data">4:30</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data flex items-center justify-center gap-2">
+                                22:30
+                                <span class="px-2 py-0.5 bg-error-container text-on-error-container text-[10px] font-bold rounded">BEHIND</span>
+</div>
+<div class="p-4 border-r border-outline-variant text-center font-numeric-data text-on-surface-variant">22:20</div>
+<div class="p-2">
+<input class="w-full bg-transparent border-transparent focus:border-primary focus:ring-0 p-2 h-full italic text-on-surface-variant" type="text" value="Possible slowdown if mud."/>
+</div>
+</div>
+<!-- Padding rows -->
+<div class="grid grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_1fr_1fr_1fr_1.2fr_0.8fr_2fr] border-b border-outline-variant/50">
+<div class="p-4 border-r border-outline-variant/50 h-14"></div>
+<div class="p-4 border-r border-outline-variant/50"></div>
+<div class="p-4 border-r border-outline-variant/50"></div>
+<div class="p-4 border-r border-outline-variant/50"></div>
+<div class="p-4 border-r border-outline-variant/50"></div>
+<div class="p-4 border-r border-outline-variant/50"></div>
+<div class="p-4 border-r border-outline-variant/50"></div>
+<div class="p-4 border-r border-outline-variant/50"></div>
+<div class="p-4 border-r border-outline-variant/50"></div>
+<div class="p-4"></div>
+</div>
+</div>
+<!-- Footer Row (Totals) -->
+<div class="grid grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_1fr_1fr_1fr_1.2fr_0.8fr_2fr] bg-secondary-fixed text-on-secondary-fixed border-t-2 border-primary">
+<div class="p-4 font-bold border-r border-outline-variant/30">TOTAL COURSE</div>
+<div class="p-4 font-numeric-data text-center border-r border-outline-variant/30">171.0</div>
+<div class="p-4 font-numeric-data text-center border-r border-outline-variant/30">10,040</div>
+<div class="p-4 font-numeric-data text-center border-r border-outline-variant/30">10,040</div>
+<div class="p-4 font-numeric-data text-center border-r border-outline-variant/30">321.4</div>
+<div class="p-4 font-numeric-data text-center border-r border-outline-variant/30">32:45</div>
+<div class="p-4 font-numeric-data text-center border-r border-outline-variant/30">32:45</div>
+<div class="p-4 font-numeric-data text-center border-r border-outline-variant/30">02:45 (Sun)</div>
+<div class="p-4 border-r border-outline-variant/30"></div>
+<div class="p-4 flex items-center justify-end">
+<span class="text-label-caps opacity-60">AUTO-CALCULATED RESULTS</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Contextual Tooltip/Status Bar -->
+<div class="fixed bottom-margin-desktop right-margin-desktop bg-inverse-surface text-inverse-on-surface px-6 py-4 rounded-xl shadow-2xl flex items-center gap-stack-lg border border-outline transition-all transform hover:scale-[1.02]">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 bg-primary-container rounded-full animate-pulse"></span>
+<span class="text-label-caps">PLANNING ACTIVE</span>
+</div>
+<div class="h-6 w-px bg-outline"></div>
+<div class="flex items-center gap-base">
+<span class="material-symbols-outlined text-[18px]" data-icon="warning">warning</span>
+<span class="font-body-md">Segment 3 (Les Contamines) is behind barrier!</span>
+</div>
+<button class="bg-primary text-on-primary px-4 py-1.5 rounded text-label-caps hover:opacity-90">RECALCULATE</button>
+</div>
+</main>
+</div>
+<!-- Global Footer -->
+<footer class="fixed bottom-0 left-0 w-full px-margin-desktop py-stack-md flex justify-between items-center bg-surface-container-highest border-t-2 border-outline-variant z-[100]">
+<div class="flex gap-stack-lg items-center">
+<span class="font-body-md font-bold text-primary">SummitPath</span>
+<span class="text-label-caps text-on-secondary-fixed-variant">© 2024 SummitPath Performance</span>
+</div>
+<div class="flex gap-stack-lg items-center">
+<a class="text-label-caps text-on-secondary-fixed-variant hover:text-primary transition-all" href="#">Terms</a>
+<a class="text-label-caps text-on-secondary-fixed-variant hover:text-primary transition-all" href="#">Privacy</a>
+<a class="text-label-caps text-on-secondary-fixed-variant hover:text-primary transition-all" href="#">API Documentation</a>
+</div>
+</footer>
+<script>
+        // Simple micro-interaction for table inputs
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.parentElement.classList.add('bg-surface-container-high');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.parentElement.classList.remove('bg-surface-container-high');
+            });
+        });
+
+        // Dynamic Calculation logic simulation
+        function calculateEffort(dist, dplus, dminus) {
+            return dist + (dplus / 100) + (dminus / 200);
+        }
+        
+        // This is where spreadsheet logic would be hooked up
+        console.log("Segment planning logic initialized.");
+    </script>
+</body></html>

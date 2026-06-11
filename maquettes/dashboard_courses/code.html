@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        /* Custom scrollbar for athletic feel */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f8f9ff; }
+        ::-webkit-scrollbar-thumb { background: #bfc9c3; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #707974; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#707974",
+                        "inverse-primary": "#99d3ba",
+                        "surface": "#f8f9ff",
+                        "on-error": "#ffffff",
+                        "primary": "#003426",
+                        "surface-bright": "#f8f9ff",
+                        "on-secondary-fixed-variant": "#364768",
+                        "surface-dim": "#cbdbf5",
+                        "on-primary": "#ffffff",
+                        "surface-tint": "#306855",
+                        "on-surface-variant": "#404944",
+                        "on-tertiary-container": "#e69e96",
+                        "tertiary": "#4d1f1b",
+                        "primary-fixed": "#b4efd6",
+                        "inverse-surface": "#213145",
+                        "on-tertiary-fixed-variant": "#6c3832",
+                        "on-background": "#0b1c30",
+                        "secondary-fixed-dim": "#b6c6ef",
+                        "on-primary-fixed-variant": "#15503e",
+                        "surface-container-highest": "#d3e4fe",
+                        "primary-fixed-dim": "#99d3ba",
+                        "on-primary-fixed": "#002117",
+                        "tertiary-fixed-dim": "#ffb4ab",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-container": "#4b5b7e",
+                        "on-primary-container": "#82bba4",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#d3e4fe",
+                        "inverse-on-surface": "#eaf1ff",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#bfc9c3",
+                        "surface-container-high": "#dce9ff",
+                        "on-surface": "#0b1c30",
+                        "tertiary-container": "#68342f",
+                        "tertiary-fixed": "#ffdad6",
+                        "secondary-container": "#c4d4fd",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-tertiary-fixed": "#370e0b",
+                        "surface-container": "#e5eeff",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#081b3a",
+                        "background": "#f8f9ff",
+                        "primary-container": "#0f4c3a",
+                        "error": "#ba1a1a",
+                        "secondary": "#4e5e81"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "32px",
+                        "stack-md": "16px",
+                        "stack-sm": "8px",
+                        "base": "4px",
+                        "touch-target-min": "48px",
+                        "stack-lg": "24px",
+                        "margin-mobile": "16px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "numeric-data": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "display-metrics": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "numeric-data": ["24px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "display-metrics": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "1.3", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex">
+<!-- SideNavBar (Authority: JSON) -->
+<aside class="fixed left-0 top-0 bottom-0 flex flex-col p-stack-md bg-surface-container-low border-r border-outline-variant w-64 z-50">
+<div class="mb-stack-lg">
+<h1 class="font-headline-md text-headline-md text-primary">SummitPath</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-1">Race Planner</p>
+</div>
+<nav class="flex-1 flex flex-col gap-base">
+<a class="flex items-center gap-stack-md bg-secondary-container text-on-secondary-container rounded-lg px-4 py-3 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="altitude">altitude</span>
+<span class="font-label-caps text-label-caps">Segments</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+<span class="font-label-caps text-label-caps">Nutrition</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span class="font-label-caps text-label-caps">Results</span>
+</a>
+</nav>
+<button class="bg-primary text-on-primary font-bold py-3 px-4 rounded-lg mb-stack-lg flex items-center justify-center gap-2 hover:opacity-90 active:opacity-80 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+            Add Segment
+        </button>
+<div class="mt-auto flex flex-col gap-base">
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-caps text-label-caps">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- TopNavBar (Authority: JSON) -->
+<header class="sticky top-0 z-40 flex justify-between items-center w-full px-margin-desktop h-touch-target-min bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-stack-lg">
+<span class="font-headline-md text-headline-md text-primary">Mes Courses</span>
+</div>
+<div class="flex items-center gap-stack-lg">
+<div class="hidden md:flex gap-stack-md">
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors" href="#">Segments</a>
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors" href="#">Nutrition</a>
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors" href="#">Results</a>
+</div>
+<div class="flex items-center gap-stack-sm">
+<button class="material-symbols-outlined p-2 text-on-surface-variant hover:text-primary cursor-pointer active:opacity-80" data-icon="file_download">file_download</button>
+<button class="bg-primary text-on-primary px-4 py-1 rounded font-body-md cursor-pointer active:opacity-80">Save</button>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-margin-desktop space-y-stack-lg">
+<!-- Hero Stats / Atmospheric Row -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter h-48">
+<div class="relative col-span-2 overflow-hidden rounded-xl bg-primary shadow-sm border border-outline-variant">
+
+<div class="relative z-10 p-stack-lg h-full flex flex-col justify-between">
+<div>
+<span class="font-label-caps text-label-caps text-primary-fixed">PRÉPARATION ACTUELLE</span>
+<h2 class="font-headline-lg text-headline-lg text-on-primary">UTMB 2024</h2>
+</div>
+<div class="flex gap-stack-lg">
+<div>
+<p class="font-label-caps text-label-caps text-primary-fixed">RESTANT</p>
+<p class="font-display-metrics text-display-metrics text-on-primary">142 <span class="text-body-md">jours</span></p>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-primary-fixed">D+ PRÉVU</p>
+<p class="font-display-metrics text-display-metrics text-on-primary">10.1k <span class="text-body-md">m</span></p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container rounded-xl p-stack-lg border border-outline-variant flex flex-col justify-center items-center text-center">
+<span class="material-symbols-outlined text-primary text-4xl mb-2" data-icon="timer">timer</span>
+<h3 class="font-headline-md text-headline-md">Prochaine séance</h3>
+<p class="text-on-surface-variant mb-4">Seuil Haut • 1h15</p>
+<button class="bg-primary text-on-primary w-full py-3 rounded-lg font-bold hover:opacity-90">Démarrer</button>
+</div>
+</div>
+<!-- List Actions -->
+<div class="flex justify-between items-end">
+<div>
+<h2 class="font-headline-md text-headline-md">Toutes mes épreuves</h2>
+<p class="text-on-surface-variant">Gérez vos plans de course et segments stratégiques.</p>
+</div>
+<button class="bg-primary text-on-primary flex items-center gap-2 px-stack-lg py-3 rounded-lg font-bold hover:opacity-90 shadow-sm transition-all">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                    Créer une nouvelle course
+                </button>
+</div>
+<!-- Race List (Data Table Pattern) -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">NOM DE LA COURSE</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">DATE</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">DISTANCE / D+</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">STATUT</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant text-right">ACTIONS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed" data-icon="terrain">terrain</span>
+</div>
+<span class="font-headline-md text-primary">UTMB 2024</span>
+</div>
+</td>
+<td class="px-6 py-5 font-numeric-data text-body-md text-on-surface">30 Août 2024</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-numeric-data text-headline-md">171 km</span>
+<span class="text-on-surface-variant text-sm">10,000m D+</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-label-caps text-[10px]">
+<span class="w-2 h-2 rounded-full bg-primary-fixed animate-pulse"></span>
+                                    EN PRÉPARATION
+                                </span>
+</td>
+<td class="px-6 py-5">
+<div class="flex justify-end gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-surface-container-high rounded text-on-surface-variant" title="Duplicate"><span class="material-symbols-outlined" data-icon="content_copy">content_copy</span></button>
+<button class="p-2 hover:bg-surface-container-high rounded text-on-surface-variant" title="Export JSON"><span class="material-symbols-outlined" data-icon="json">data_object</span></button>
+<button class="p-2 hover:bg-surface-container-high rounded text-on-surface-variant" title="Archive"><span class="material-symbols-outlined" data-icon="archive">archive</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container" data-icon="directions_run">directions_run</span>
+</div>
+<span class="font-headline-md text-primary">Marathon du Mont-Blanc</span>
+</div>
+</td>
+<td class="px-6 py-5 font-numeric-data text-body-md text-on-surface">23 Juin 2024</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-numeric-data text-headline-md">42 km</span>
+<span class="text-on-surface-variant text-sm">2,730m D+</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant font-label-caps text-[10px]">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+                                    TERMINÉ
+                                </span>
+</td>
+<td class="px-6 py-5">
+<div class="flex justify-end gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-surface-container-high rounded text-on-surface-variant" title="Duplicate"><span class="material-symbols-outlined" data-icon="content_copy">content_copy</span></button>
+<button class="p-2 hover:bg-surface-container-high rounded text-on-surface-variant" title="Export JSON"><span class="material-symbols-outlined" data-icon="json">data_object</span></button>
+<button class="p-2 hover:bg-surface-container-high rounded text-on-surface-variant" title="Archive"><span class="material-symbols-outlined" data-icon="archive">archive</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed" data-icon="forest">forest</span>
+</div>
+<span class="font-headline-md text-primary">Templiers 2024</span>
+</div>
+</td>
+<td class="px-6 py-5 font-numeric-data text-body-md text-on-surface">20 Oct 2024</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-numeric-data text-headline-md">80 km</span>
+<span class="text-on-surface-variant text-sm">3,600m D+</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-label-caps text-[10px]">
+<span class="w-2 h-2 rounded-full bg-primary-fixed"></span>
+                                    EN PRÉPARATION
+                                </span>
+</td>
+<td class="px-6 py-5">
+<div class="flex justify-end gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-surface-container-high rounded text-on-surface-variant" title="Duplicate"><span class="material-symbols-outlined" data-icon="content_copy">content_copy</span></button>
+<button class="p-2 hover:bg-surface-container-high rounded text-on-surface-variant" title="Export JSON"><span class="material-symbols-outlined" data-icon="json">data_object</span></button>
+<button class="p-2 hover:bg-surface-container-high rounded text-on-surface-variant" title="Archive"><span class="material-symbols-outlined" data-icon="archive">archive</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Bento Widgets for Insights -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="md:col-span-1 bg-white p-stack-md rounded-xl border border-outline-variant flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant">TOTAL DISTANCE PLANIFIÉE</span>
+<div class="mt-4">
+<span class="font-display-metrics text-display-metrics text-primary">293 <span class="text-lg">km</span></span>
+<div class="w-full bg-surface-container-low h-2 rounded-full mt-2">
+<div class="bg-primary h-2 rounded-full w-[65%]"></div>
+</div>
+</div>
+</div>
+<div class="md:col-span-1 bg-white p-stack-md rounded-xl border border-outline-variant flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant">DÉNIVELÉ CUMULÉ</span>
+<div class="mt-4">
+<span class="font-display-metrics text-display-metrics text-primary">16.3 <span class="text-lg">km</span></span>
+<p class="text-sm text-on-surface-variant mt-1">+12% vs mois dernier</p>
+</div>
+</div>
+<div class="md:col-span-2 relative overflow-hidden rounded-xl bg-surface-container-low border border-outline-variant">
+<div class="absolute inset-0 grayscale opacity-20">
+<img class="w-full h-full object-cover" data-alt="A high-contrast black and white landscape of jagged mountain peaks shrouded in morning mist. The image captures the rugged and demanding environment of high-altitude trail running, reflecting a professional and athletic aesthetic with a focus on endurance and clarity. Deep shadows and bright highlights emphasize the texture of the rocks and the vastness of the terrain." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHmg35Ph--Z01Te_s3a8Fn68JQrF7YpkgGcEM2VPoaNbmcjyN5iSJ4aaAy_g2_nserZtjl8IfQY2UUk3dRgj9ue064hUqwPhoUbc5wA8m1jRIOjmay3SMsZZC47gIY67E2JGzUnlqfip4PT7oYrI1WbE3_d7e7XI4eDb4z8zpMW3qDsh-Dn8KSlaQVxA7LKYRLRfDAd30AA0wnkPHWeZKNNi7wNvQWJgKXNy44F4OqG2wsD5L5CarBif0hQoRZ6umY-XwQ30exLQ"/>
+</div>
+<div class="relative z-10 p-stack-md h-full flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-on-surface">ZONE D'ENTRAÎNEMENT</span>
+<p class="font-headline-md text-headline-md text-primary">Haute-Savoie, FR</p>
+<a class="text-primary font-bold text-sm flex items-center gap-1 hover:underline" href="#">
+                            Voir la carte topographique <span class="material-symbols-outlined text-sm" data-icon="open_in_new">open_in_new</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer (Authority: JSON) -->
+<footer class="mt-auto w-full px-margin-desktop py-stack-md flex justify-between items-center bg-surface-container-highest border-t-2 border-outline-variant">
+<span class="font-body-md text-body-md font-bold text-primary">© 2024 SummitPath Performance</span>
+<div class="flex gap-stack-lg items-center">
+<a class="font-label-caps text-label-caps text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Terms</a>
+<a class="font-label-caps text-label-caps text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="font-label-caps text-label-caps text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">API Documentation</a>
+</div>
+</footer>
+</main>
+<script>
+        // Simple micro-interaction for active states
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                document.querySelectorAll('nav a').forEach(l => {
+                    l.classList.remove('bg-secondary-container', 'text-on-secondary-container');
+                    l.classList.add('text-on-surface-variant');
+                });
+                link.classList.remove('text-on-surface-variant');
+                link.classList.add('bg-secondary-container', 'text-on-secondary-container');
+            });
+        });
+    </script>
+</body></html>

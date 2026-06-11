@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<title>SummitPath - Post-race Results Analysis</title>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Custom scrollbar for data-heavy views */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #bfc9c3;
+            border-radius: 10px;
+        }
+        .focus-ring:focus-within {
+            outline: 2px solid #003426;
+            outline-offset: 2px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline": "#707974",
+                      "inverse-primary": "#99d3ba",
+                      "surface": "#f8f9ff",
+                      "on-error": "#ffffff",
+                      "primary": "#003426",
+                      "surface-bright": "#f8f9ff",
+                      "on-secondary-fixed-variant": "#364768",
+                      "surface-dim": "#cbdbf5",
+                      "on-primary": "#ffffff",
+                      "surface-tint": "#306855",
+                      "on-surface-variant": "#404944",
+                      "on-tertiary-container": "#e69e96",
+                      "tertiary": "#4d1f1b",
+                      "primary-fixed": "#b4efd6",
+                      "inverse-surface": "#213145",
+                      "on-tertiary-fixed-variant": "#6c3832",
+                      "on-background": "#0b1c30",
+                      "secondary-fixed-dim": "#b6c6ef",
+                      "on-primary-fixed-variant": "#15503e",
+                      "surface-container-highest": "#d3e4fe",
+                      "primary-fixed-dim": "#99d3ba",
+                      "on-primary-fixed": "#002117",
+                      "tertiary-fixed-dim": "#ffb4ab",
+                      "surface-container-low": "#eff4ff",
+                      "on-secondary-container": "#4b5b7e",
+                      "on-primary-container": "#82bba4",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-variant": "#d3e4fe",
+                      "inverse-on-surface": "#eaf1ff",
+                      "error-container": "#ffdad6",
+                      "on-error-container": "#93000a",
+                      "outline-variant": "#bfc9c3",
+                      "surface-container-high": "#dce9ff",
+                      "on-surface": "#0b1c30",
+                      "tertiary-container": "#68342f",
+                      "tertiary-fixed": "#ffdad6",
+                      "secondary-container": "#c4d4fd",
+                      "on-secondary": "#ffffff",
+                      "secondary-fixed": "#d8e2ff",
+                      "on-tertiary-fixed": "#370e0b",
+                      "surface-container": "#e5eeff",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed": "#081b3a",
+                      "background": "#f8f9ff",
+                      "primary-container": "#0f4c3a",
+                      "error": "#ba1a1a",
+                      "secondary": "#4e5e81"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-desktop": "32px",
+                      "stack-md": "16px",
+                      "stack-sm": "8px",
+                      "base": "4px",
+                      "touch-target-min": "48px",
+                      "stack-lg": "24px",
+                      "margin-mobile": "16px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "numeric-data": ["Inter"],
+                      "label-caps": ["Inter"],
+                      "display-metrics": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Inter"]
+              },
+              "fontSize": {
+                      "numeric-data": ["24px", {"lineHeight": "1", "fontWeight": "600"}],
+                      "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "display-metrics": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "headline-md": ["20px", {"lineHeight": "1.3", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-hidden h-screen flex">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 bottom-0 flex flex-col p-stack-md bg-surface-container-low border-r border-outline-variant w-64 z-50">
+<div class="mb-stack-lg">
+<h1 class="font-headline-md text-headline-md text-primary">Race Planner</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant">UTMB Preparation</p>
+</div>
+<nav class="flex-1 flex flex-col gap-base">
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="altitude">altitude</span>
+<span class="font-label-caps text-label-caps">Segments</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+<span class="font-label-caps text-label-caps">Nutrition</span>
+</a>
+<a class="flex items-center gap-stack-md bg-secondary-container text-on-secondary-container rounded-lg px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined fill-icon" data-icon="leaderboard" style="font-variation-settings: 'FILL' 1;">leaderboard</span>
+<span class="font-label-caps text-label-caps">Results</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-base border-t border-outline-variant pt-stack-md">
+<button class="bg-primary text-on-primary font-label-caps text-label-caps px-4 py-3 rounded-lg flex items-center justify-center gap-2 mb-stack-md">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span> Add Segment
+            </button>
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-2 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant px-4 py-2 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-caps text-label-caps">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 flex-1 flex flex-col h-full bg-surface overflow-y-auto">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-40 flex justify-between items-center w-full px-margin-desktop h-touch-target-min bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-stack-md">
+<span class="font-headline-md text-headline-md text-primary">SummitPath</span>
+</div>
+<div class="hidden md:flex gap-stack-lg">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">Dashboard</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">Segments</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">Nutrition</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md" href="#">Results</a>
+</div>
+<div class="flex items-center gap-stack-md">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="file_download">file_download</span>
+<button class="text-primary font-bold px-4 py-2 hover:bg-primary-fixed transition-colors rounded-lg">Export JSON</button>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-lg font-bold">Save</button>
+</div>
+</header>
+<!-- Content Body -->
+<div class="p-margin-desktop space-y-stack-lg max-w-7xl mx-auto w-full">
+<div class="flex flex-col md:flex-row justify-between items-end gap-stack-md">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-background">Post-race Analysis</h2>
+<p class="text-on-surface-variant font-body-lg">Dernière épreuve : UTMB® Mont-Blanc 2024</p>
+</div>
+<div class="bg-primary-fixed-dim px-4 py-2 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-on-primary-fixed" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-caps text-label-caps text-on-primary-fixed">DONNÉES VÉRIFIÉES</span>
+</div>
+</div>
+<!-- Bento Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-stack-md">
+<!-- Section: Saisie Temps Réel -->
+<section class="md:col-span-4 bg-surface-container-lowest p-stack-lg rounded-xl border border-outline-variant flex flex-col justify-center">
+<label class="font-label-caps text-label-caps text-on-surface-variant mb-stack-sm block uppercase tracking-widest">Saisie Temps Réel</label>
+<div class="relative focus-ring p-1 rounded-lg border-2 border-outline-variant bg-white">
+<input class="w-full text-center font-display-metrics text-display-metrics text-primary bg-transparent border-none focus:ring-0 p-0" placeholder="21:45" type="text" value="22:15"/>
+<div class="absolute bottom-2 right-4 font-label-caps text-on-surface-variant opacity-50">HH:MM</div>
+</div>
+<p class="mt-stack-sm text-center text-on-surface-variant font-body-md italic">Entrez votre temps final pour recalculer les écarts.</p>
+</section>
+<!-- Comparison Main Card -->
+<section class="md:col-span-8 bg-surface-container-lowest p-stack-lg rounded-xl border border-outline-variant grid grid-cols-1 md:grid-cols-3 gap-stack-lg">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-base">ALLURE RÉELLE</span>
+<div class="flex items-baseline gap-base">
+<span class="font-display-metrics text-display-metrics text-primary">12:45</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">min/km-e</span>
+</div>
+<div class="mt-stack-sm flex items-center gap-2 text-on-surface-variant">
+<span class="font-body-md">Cible: 12:20</span>
+<span class="bg-error-container text-on-error-container font-label-caps text-[10px] px-2 py-0.5 rounded-full">+2%</span>
+</div>
+</div>
+<div class="flex flex-col border-l-0 md:border-l border-outline-variant md:pl-stack-lg">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-base">ÉCART TEMPS</span>
+<div class="flex items-baseline gap-base text-error">
+<span class="font-display-metrics text-display-metrics">+30</span>
+<span class="font-label-caps text-label-caps">MIN</span>
+</div>
+<p class="mt-stack-sm font-body-md text-on-surface-variant">Vs Plan initial</p>
+</div>
+<div class="flex flex-col border-l-0 md:border-l border-outline-variant md:pl-stack-lg">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-base">ÉCART ALLURE</span>
+<div class="flex items-baseline gap-base text-error">
+<span class="font-display-metrics text-display-metrics">-2.5</span>
+<span class="font-label-caps text-label-caps">%</span>
+</div>
+<p class="mt-stack-sm font-body-md text-on-surface-variant">Baisse de performance</p>
+</div>
+</section>
+<!-- Insights & Analysis -->
+<section class="md:col-span-7 space-y-stack-md">
+<div class="bg-surface-container-high p-stack-lg rounded-xl border border-outline-variant">
+<div class="flex items-center justify-between mb-stack-md">
+<h3 class="font-headline-md text-headline-md">Segments les plus lents</h3>
+<span class="material-symbols-outlined text-error" data-icon="trending_down">trending_down</span>
+</div>
+<div class="space-y-base">
+<!-- Row 1 -->
+<div class="flex items-center justify-between h-[56px] px-4 bg-white rounded border border-outline-variant">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Col de la Seigne</span>
+<span class="text-xs text-on-surface-variant">Km 61-70 | +800m</span>
+</div>
+<div class="text-right">
+<span class="font-numeric-data text-numeric-data text-error">+12:00</span>
+<div class="text-xs text-on-surface-variant">Ecart Split</div>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="flex items-center justify-between h-[56px] px-4 bg-white/50 rounded border border-outline-variant">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Grand Col Ferret</span>
+<span class="text-xs text-on-surface-variant">Km 102-110 | +1000m</span>
+</div>
+<div class="text-right">
+<span class="font-numeric-data text-numeric-data text-error">+08:30</span>
+<div class="text-xs text-on-surface-variant">Ecart Split</div>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="flex items-center justify-between h-[56px] px-4 bg-white rounded border border-outline-variant">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Montée Bovine</span>
+<span class="text-xs text-on-surface-variant">Km 133-140 | +750m</span>
+</div>
+<div class="text-right">
+<span class="font-numeric-data text-numeric-data text-error">+06:15</span>
+<div class="text-xs text-on-surface-variant">Ecart Split</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-primary-container p-stack-lg rounded-xl border border-primary text-on-primary-container">
+<div class="flex items-center justify-between mb-stack-md">
+<h3 class="font-headline-md text-headline-md text-primary-fixed">Points forts</h3>
+<span class="material-symbols-outlined text-primary-fixed" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<div class="grid grid-cols-2 gap-stack-md">
+<div class="bg-white/10 p-stack-md rounded-lg">
+<p class="font-label-caps text-label-caps text-primary-fixed mb-base">DESCENTE TECHNIQUE</p>
+<p class="font-body-md">Gestion optimale vers Courmayeur. Aucun temps perdu sur les appuis.</p>
+</div>
+<div class="bg-white/10 p-stack-md rounded-lg">
+<p class="font-label-caps text-label-caps text-primary-fixed mb-base">NUTRITION</p>
+<p class="font-body-md">Pas de coup de barre glycémique. Apport constant de 60g carb/h.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Visualization Card -->
+<section class="md:col-span-5 bg-surface-container-lowest p-stack-lg rounded-xl border border-outline-variant flex flex-col h-full">
+<h3 class="font-headline-md text-headline-md mb-stack-md">Répartition Effort</h3>
+<div class="flex-1 relative min-h-[300px] flex items-end justify-between gap-2 border-b border-outline-variant pb-stack-sm">
+<!-- Bar chart placeholder -->
+<div class="flex-1 bg-primary/20 rounded-t-sm relative group h-[80%] transition-all hover:bg-primary/40">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-inverse-surface text-on-primary-fixed px-2 py-1 rounded text-xs">Cible</div>
+<div class="absolute bottom-0 w-full bg-primary h-[85%] rounded-t-sm"></div>
+</div>
+<div class="flex-1 bg-primary/20 rounded-t-sm relative group h-[60%] transition-all hover:bg-primary/40">
+<div class="absolute bottom-0 w-full bg-primary h-[65%] rounded-t-sm"></div>
+</div>
+<div class="flex-1 bg-primary/20 rounded-t-sm relative group h-[90%] transition-all hover:bg-primary/40">
+<div class="absolute bottom-0 w-full bg-error h-[100%] rounded-t-sm"></div>
+</div>
+<div class="flex-1 bg-primary/20 rounded-t-sm relative group h-[70%] transition-all hover:bg-primary/40">
+<div class="absolute bottom-0 w-full bg-primary h-[72%] rounded-t-sm"></div>
+</div>
+<div class="flex-1 bg-primary/20 rounded-t-sm relative group h-[85%] transition-all hover:bg-primary/40">
+<div class="absolute bottom-0 w-full bg-primary h-[82%] rounded-t-sm"></div>
+</div>
+<!-- Overlay Labels -->
+<div class="absolute -bottom-6 left-0 right-0 flex justify-between px-2 font-label-caps text-[10px] text-on-surface-variant">
+<span>DEP</span><span>KM 40</span><span>KM 80</span><span>KM 120</span><span>FIN</span>
+</div>
+</div>
+<div class="mt-stack-lg p-stack-md bg-surface-container-low rounded border border-outline-variant">
+<div class="flex gap-stack-sm items-start">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="info">info</span>
+<p class="font-body-md text-on-surface-variant">L'écart principal s'est creusé lors de la section de nuit. Envisager un meilleur éclairage pour la prochaine fois.</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Image/Map Reference -->
+<div class="rounded-xl overflow-hidden h-[300px] relative border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A wide cinematic landscape of the French Alps during sunrise, showing rugged snow-capped peaks and winding trail paths. The lighting is crisp and cool, creating high contrast between the shadows of the valleys and the bright morning sun on the summits. The overall aesthetic is professional, sharp, and awe-inspiring, mirroring the high-performance athlete's environment with a clean and structured composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2dbtTQbxJBx0BbkEBTh3UCt6B9D9DJnBFzpQ0BiioahhDysgj5YwJuTYOV9UWNZc95pHGqYm7sx5KMqXQZ_e6yGQiX_7mDWQLzjR3uUMt_ewpPMwiAoAWLC36wC_nMxKU4CNsg6WRlWmrB4-qXFq4ezrc3bbqd60dfswt5lcF3AjEkYG4CXtRJMSZ_C9PL2EiKlwaT1ptiXDtWHXDsW7kUFlRw7p7UphPrAbvly2KhdmuhDTeCEe-iSkDdS8BKTdvi1fmP4HnfQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent"></div>
+<div class="absolute bottom-stack-lg left-stack-lg text-white">
+<h4 class="font-headline-lg text-headline-lg">Chamonix, FR</h4>
+<p class="font-body-lg opacity-90">Trace GPS validée par SummitPath</p>
+</div>
+<button class="absolute bottom-stack-lg right-stack-lg bg-white/20 backdrop-blur-md text-white border border-white/30 px-6 py-2 rounded-full font-label-caps hover:bg-white/40 transition-all">
+                    VOIR CARTE DÉTAILLÉE
+                </button>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-auto w-full px-margin-desktop py-stack-md flex justify-between items-center bg-surface-container-highest border-t-2 border-outline-variant">
+<div class="flex items-center gap-stack-lg">
+<span class="font-body-md font-bold text-primary">SummitPath</span>
+<span class="font-label-caps text-label-caps text-on-secondary-fixed-variant">© 2024 SummitPath Performance</span>
+</div>
+<div class="flex gap-stack-lg items-center">
+<a class="font-label-caps text-label-caps text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Terms</a>
+<a class="font-label-caps text-label-caps text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="font-label-caps text-label-caps text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">API Documentation</a>
+</div>
+</footer>
+</main>
+<script>
+        // Micro-interaction for input field
+        const timeInput = document.querySelector('input[type="text"]');
+        timeInput.addEventListener('focus', () => {
+            timeInput.parentElement.classList.add('ring-2', 'ring-primary');
+        });
+        timeInput.addEventListener('blur', () => {
+            timeInput.parentElement.classList.remove('ring-2', 'ring-primary');
+        });
+
+        // Simple animation on load for bar chart
+        document.addEventListener('DOMContentLoaded', () => {
+            const bars = document.querySelectorAll('.bg-primary, .bg-error');
+            bars.forEach((bar, index) => {
+                const originalHeight = bar.style.height;
+                bar.style.height = '0%';
+                setTimeout(() => {
+                    bar.style.transition = 'height 1s cubic-bezier(0.16, 1, 0.3, 1)';
+                    bar.style.height = bar.parentElement.dataset.height || '100%';
+                }, 100 * index);
+            });
+        });
+    </script>
+</body></html>
