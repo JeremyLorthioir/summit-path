@@ -1,24 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import type { Course, ProduitGlobal, Segment, SegmentProduit } from '@/lib/types';
-import { createProduct, deleteProduct, listenProducts, updateProduct } from '@/lib/products';
+import { listenProducts } from '@/lib/products';
 import { computeProduitSummary, computeSegments } from '@/lib/courseCalc';
 import { segmentDisplayLabel } from '@/lib/segmentLabels';
-
-type DraftProduit = {
-  nom: string;
-  unite: string;
-  glucidesParUniteG: string;
-  volumeLiquideMl: string;
-};
-
-const emptyDraft: DraftProduit = {
-  nom: '',
-  unite: 'unite',
-  glucidesParUniteG: '0',
-  volumeLiquideMl: '0',
-};
 
 export default function RavitoScreen({
   course,
@@ -34,9 +21,7 @@ export default function RavitoScreen({
   const [segments, setSegments] = useState<Segment[]>(initialSegments);
   const [catalog, setCatalog] = useState<ProduitGlobal[]>([]);
   const [saving, setSaving] = useState(false);
-  const [catalogBusy, setCatalogBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [draft, setDraft] = useState<DraftProduit>(emptyDraft);
 
   useEffect(() => {
     const unsubscribe = listenProducts(
@@ -109,56 +94,6 @@ export default function RavitoScreen({
     );
   };
 
-  const createCatalogProduct = async () => {
-    if (!draft.nom.trim()) return;
-    setCatalogBusy(true);
-    setError(null);
-    try {
-      await createProduct(course.ownerUid, {
-        nom: draft.nom.trim(),
-        unite: draft.unite.trim() || 'unite',
-        glucidesParUniteG: Number(draft.glucidesParUniteG) || 0,
-        volumeLiquideMl: Number(draft.volumeLiquideMl) || 0,
-        actif: true,
-      });
-      setDraft(emptyDraft);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setCatalogBusy(false);
-    }
-  };
-
-  const patchCatalogProduct = async (id: string, patch: Partial<ProduitGlobal>) => {
-    setCatalogBusy(true);
-    setError(null);
-    try {
-      await updateProduct(id, patch);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setCatalogBusy(false);
-    }
-  };
-
-  const deleteCatalogProduct = async (productId: string) => {
-    const used = segments.some((segment) => (segment.produits ?? []).some((item) => item.produitId === productId));
-    if (used) {
-      setError('Ce produit est encore utilise dans au moins un segment.');
-      return;
-    }
-
-    setCatalogBusy(true);
-    setError(null);
-    try {
-      await deleteProduct(productId);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setCatalogBusy(false);
-    }
-  };
-
   const productById = new Map(catalog.map((product) => [product.id, product]));
 
   return (
@@ -181,109 +116,23 @@ export default function RavitoScreen({
       )}
 
       <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-stack-lg space-y-stack-md">
-        <h3 className="text-body-lg font-semibold text-on-surface">Catalogue produits global (toutes les courses)</h3>
-
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left text-body-md">
-            <thead>
-              <tr className="border-b border-outline-variant bg-surface-container-low">
-                <Th>Produit</Th>
-                <Th>Unite</Th>
-                <Th>Glucides/u (g)</Th>
-                <Th>Liquide/u (ml)</Th>
-                <Th></Th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-outline-variant">
-              {catalog.map((product) => (
-                <tr key={product.id}>
-                  <td className="px-2 py-2">
-                    <input
-                      value={product.nom}
-                      onChange={(e) => patchCatalogProduct(product.id, { nom: e.target.value })}
-                      className={cellInput + ' min-w-[10rem]'}
-                    />
-                  </td>
-                  <td className="px-2 py-2">
-                    <input
-                      value={product.unite}
-                      onChange={(e) => patchCatalogProduct(product.id, { unite: e.target.value })}
-                      className={cellInput + ' w-28'}
-                    />
-                  </td>
-                  <td className="px-2 py-2">
-                    <NumInput
-                      value={product.glucidesParUniteG}
-                      onChange={(v) => patchCatalogProduct(product.id, { glucidesParUniteG: v })}
-                    />
-                  </td>
-                  <td className="px-2 py-2">
-                    <NumInput
-                      value={product.volumeLiquideMl}
-                      onChange={(v) => patchCatalogProduct(product.id, { volumeLiquideMl: v })}
-                    />
-                  </td>
-                  <td className="px-2 py-2 text-center">
-                    <button
-                      type="button"
-                      onClick={() => deleteCatalogProduct(product.id)}
-                      disabled={catalogBusy}
-                      className="text-error hover:underline disabled:opacity-50"
-                    >
-                      Suppr.
-                    </button>
-                  </td>
-                </tr>
-              ))}
-
-              <tr className="bg-surface-container-low/40">
-                <td className="px-2 py-2">
-                  <input
-                    placeholder="Nouveau produit"
-                    value={draft.nom}
-                    onChange={(e) => setDraft((prev) => ({ ...prev, nom: e.target.value }))}
-                    className={cellInput + ' min-w-[10rem]'}
-                  />
-                </td>
-                <td className="px-2 py-2">
-                  <input
-                    value={draft.unite}
-                    onChange={(e) => setDraft((prev) => ({ ...prev, unite: e.target.value }))}
-                    className={cellInput + ' w-28'}
-                  />
-                </td>
-                <td className="px-2 py-2">
-                  <input
-                    type="number"
-                    min="0"
-                    value={draft.glucidesParUniteG}
-                    onChange={(e) => setDraft((prev) => ({ ...prev, glucidesParUniteG: e.target.value }))}
-                    className={cellInput + ' w-20 tabular-nums'}
-                  />
-                </td>
-                <td className="px-2 py-2">
-                  <input
-                    type="number"
-                    min="0"
-                    value={draft.volumeLiquideMl}
-                    onChange={(e) => setDraft((prev) => ({ ...prev, volumeLiquideMl: e.target.value }))}
-                    className={cellInput + ' w-20 tabular-nums'}
-                  />
-                </td>
-                <td className="px-2 py-2 text-center">
-                  <button
-                    type="button"
-                    onClick={createCatalogProduct}
-                    disabled={catalogBusy}
-                    className="rounded-lg border-2 border-outline-variant px-3 py-1 text-label-caps uppercase hover:border-primary disabled:opacity-50"
-                  >
-                    + Ajout
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="flex flex-wrap items-center justify-between gap-stack-md">
+          <div>
+            <h3 className="text-body-lg font-semibold text-on-surface">Catalogue produits global</h3>
+            <p className="text-body-md text-on-surface-variant">
+              Le catalogue est mutualise entre toutes les courses.
+            </p>
+          </div>
+          <Link
+            href="/products"
+            className="rounded-lg border-2 border-outline-variant px-4 py-2 text-label-caps uppercase text-on-surface hover:border-primary"
+          >
+            Gerer le catalogue
+          </Link>
         </div>
+        <p className="text-body-md text-on-surface-variant">
+          Produits disponibles: <span className="font-semibold text-on-surface">{catalog.length}</span>
+        </p>
       </section>
 
       <section className="space-y-stack-md">
@@ -313,6 +162,7 @@ export default function RavitoScreen({
                 <button
                   type="button"
                   onClick={() => addProduitToSegment(segmentIndex)}
+                  disabled={catalog.length === 0}
                   className="rounded-lg border-2 border-outline-variant px-3 py-2 text-label-caps uppercase text-on-surface hover:border-primary"
                 >
                   + Produit
@@ -355,6 +205,7 @@ export default function RavitoScreen({
                               }
                               className={cellInput + ' min-w-[12rem]'}
                             >
+                              {catalog.length === 0 && <option value="">Aucun produit</option>}
                               {catalog.map((productOption) => (
                                 <option key={productOption.id} value={productOption.id}>
                                   {productOption.nom}

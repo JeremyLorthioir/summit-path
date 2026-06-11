@@ -62,7 +62,16 @@ export default function SegmentsViewScreen({ course }: { course: Course }) {
                 key={segment.ordre}
                 className="grid grid-cols-[1.9fr_0.7fr_0.7fr_0.7fr_0.9fr_0.9fr_0.9fr_1.1fr_0.8fr_1.2fr_1fr_1fr] border-b border-outline-variant/70 text-body-md hover:bg-surface-container"
               >
-                <Cell className="font-semibold text-on-surface">{segmentDisplayLabel(segments, index)}</Cell>
+                <Cell className="font-semibold text-on-surface">
+                  <div className="flex items-center gap-2">
+                    <span>{segmentDisplayLabel(segments, index)}</span>
+                    {segment.segmentDeNuit && (
+                      <span className="rounded-full bg-secondary-container px-2 py-0.5 text-label-caps uppercase text-on-surface">
+                        Nuit
+                      </span>
+                    )}
+                  </div>
+                </Cell>
                 <Cell align="center" className="tabular-nums">{segment.distanceKm.toFixed(1)}</Cell>
                 <Cell align="center" className="tabular-nums">{segment.dplusM}</Cell>
                 <Cell align="center" className="tabular-nums">{segment.dmoinsM}</Cell>

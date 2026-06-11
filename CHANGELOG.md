@@ -13,6 +13,9 @@
 - **Catalogue global** - produits mutualises entre courses (Firestore `products`), edition depuis l'onglet ravito
 - **Synthese ravito** - condensat automatique par produit (quantites, glucides, volume liquide, segments touches)
 - **Style tokens** - extension de `tailwind.config.ts` pour aligner toutes les pages aux couleurs/espacements maquette
+- **Catalogue dedie** - nouvelle page `products` pour gerer les produits globaux hors course
+- **Ravito simplifie** - onglet ravitaillement recentre sur selection par segment + synthese
+- **Recap nuit** - affichage explicite du statut nuit sur la page recap segments
 
 ### Corrige
 - **PostCSS** - export `plugins` explicite dans `postcss.config.js` pour Next

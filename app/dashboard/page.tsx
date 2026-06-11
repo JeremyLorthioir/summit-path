@@ -87,12 +87,20 @@ export default function Dashboard() {
       <AppHeader
         title="Mes courses"
         actions={
-          <Link
-            href="/course/new"
-            className="rounded-lg bg-primary px-4 py-2 text-body-md font-semibold text-on-primary transition-opacity hover:opacity-90"
-          >
-            + Nouvelle course
-          </Link>
+          <div className="flex gap-stack-md">
+            <Link
+              href="/products"
+              className="rounded-lg border-2 border-outline-variant px-4 py-2 text-body-md font-semibold text-on-surface hover:border-primary"
+            >
+              Produits
+            </Link>
+            <Link
+              href="/course/new"
+              className="rounded-lg bg-primary px-4 py-2 text-body-md font-semibold text-on-primary transition-opacity hover:opacity-90"
+            >
+              + Nouvelle course
+            </Link>
+          </div>
         }
       />
 
