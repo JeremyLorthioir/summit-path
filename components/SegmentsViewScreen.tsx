@@ -61,7 +61,7 @@ export default function SegmentsViewScreen({ course }: { course: Course }) {
           <HeaderCell align="center">Cumule</HeaderCell>
           <HeaderCell align="center">Passage</HeaderCell>
           <HeaderCell align="center">Barriere</HeaderCell>
-          <HeaderCell>Prises</HeaderCell>
+          <HeaderCell>Produits</HeaderCell>
           <HeaderCell>Remarques</HeaderCell>
           <HeaderCell align="center">Marge</HeaderCell>
         </div>
@@ -101,7 +101,7 @@ export default function SegmentsViewScreen({ course }: { course: Course }) {
                 <Cell align="center" className="tabular-nums">{formatMinutes(row?.tempsCumuleMin ?? 0)}</Cell>
                 <Cell align="center" className="tabular-nums">{row?.heurePassage || '-'}</Cell>
                 <Cell align="center" className="tabular-nums">{segment.barriereHoraire || '-'}</Cell>
-                <Cell className="text-on-surface-variant">{segment.prises || '-'}</Cell>
+                <Cell className="text-on-surface-variant">{formatSegmentProducts(segment.produits, catalogMap)}</Cell>
                 <Cell className="text-on-surface-variant">{segment.remarques || '-'}</Cell>
                 <Cell align="center" className="tabular-nums">
                   {marge == null ? (
@@ -134,27 +134,6 @@ export default function SegmentsViewScreen({ course }: { course: Course }) {
           </div>
         )}
       </div>
-
-      {segments.length > 0 && (
-        <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-stack-lg">
-          <h3 className="text-body-lg font-semibold text-on-surface">Produits par segment</h3>
-          <div className="mt-stack-md space-y-2">
-            {segments.map((segment, index) => (
-              <div
-                key={`products-${segment.ordre}`}
-                className="rounded-lg border border-outline-variant bg-surface-container-low p-3"
-              >
-                <div className="text-label-caps uppercase text-on-surface-variant">
-                  {segmentDisplayLabel(segments, index)}
-                </div>
-                <div className="mt-1 text-body-md text-on-surface">
-                  {formatSegmentProducts(segment.produits, catalogMap)}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
 
       <div className="flex items-center justify-between rounded-xl border border-outline bg-inverse-surface px-5 py-3 text-inverse-on-surface shadow-sm print:hidden">
         <div className="flex items-center gap-stack-md">
@@ -228,12 +207,13 @@ function formatSegmentProducts(
   catalogMap: Map<string, ProduitGlobal>
 ): string {
   if (!items || items.length === 0) return 'Aucun produit';
-  return items
+  const rendered = items
     .filter((item) => item.quantite > 0)
     .map((item) => {
       const product = catalogMap.get(item.produitId);
       if (!product) return `${item.quantite} x produit (${item.produitId})`;
       return `${item.quantite} x ${product.nom} (${product.unite})`;
-    })
-    .join('  ·  ');
+    });
+
+  return rendered.length > 0 ? rendered.join('  ·  ') : 'Aucun produit';
 }
