@@ -13,7 +13,7 @@ import {
   totalGlucidesParTranche,
   glucidesOK,
 } from '@/lib/calc';
-import type { Course, Segment, RavitoItem, StockProduit } from '@/lib/types';
+import type { Course, Segment, RavitoItem, StockProduit, ProduitGlobal } from '@/lib/types';
 
 export interface SegmentRow {
   segment: Segment;
@@ -94,6 +94,71 @@ export interface StockRow {
   totalCalcule: number;
   /** true si la somme par ravito dépasse la quantité initiale. */
   insuffisant: boolean;
+}
+
+export interface ProduitSummaryRow {
+  produitId: string;
+  nom: string;
+  unite: string;
+  totalQuantite: number;
+  totalGlucidesG: number;
+  totalLiquideMl: number;
+  segmentsTouches: number;
+}
+
+export interface ProduitSummary {
+  rows: ProduitSummaryRow[];
+  totalGlucidesG: number;
+  totalLiquideMl: number;
+}
+
+/**
+ * Agrège les produits sélectionnés par segment pour produire la synthèse ravitaillement.
+ */
+export function computeProduitSummary(
+  segments: Segment[],
+  catalog: ProduitGlobal[]
+): ProduitSummary {
+  const catalogMap = new Map(catalog.map((p) => [p.id, p]));
+  const aggregate = new Map<string, ProduitSummaryRow>();
+
+  for (const segment of segments) {
+    const seenInSegment = new Set<string>();
+    for (const item of segment.produits ?? []) {
+      const product = catalogMap.get(item.produitId);
+      if (!product) continue;
+      const qty = Math.max(0, item.quantite || 0);
+      const existing = aggregate.get(product.id);
+      const next: ProduitSummaryRow = existing
+        ? { ...existing }
+        : {
+            produitId: product.id,
+            nom: product.nom,
+            unite: product.unite,
+            totalQuantite: 0,
+            totalGlucidesG: 0,
+            totalLiquideMl: 0,
+            segmentsTouches: 0,
+          };
+
+      next.totalQuantite += qty;
+      next.totalGlucidesG += qty * Math.max(0, product.glucidesParUniteG || 0);
+      next.totalLiquideMl += qty * Math.max(0, product.volumeLiquideMl || 0);
+      if (!seenInSegment.has(product.id)) {
+        next.segmentsTouches += 1;
+        seenInSegment.add(product.id);
+      }
+
+      aggregate.set(product.id, next);
+    }
+  }
+
+  const rows = Array.from(aggregate.values()).sort((a, b) => b.totalQuantite - a.totalQuantite);
+  return {
+    rows,
+    totalGlucidesG: rows.reduce((acc, row) => acc + row.totalGlucidesG, 0),
+    totalLiquideMl: rows.reduce((acc, row) => acc + row.totalLiquideMl, 0),
+  };
 }
 
 /** Calcule les totaux de stock et détecte les insuffisances. */

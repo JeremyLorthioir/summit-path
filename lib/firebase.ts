@@ -1,6 +1,7 @@
 import { initializeApp, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getFirestore, type Firestore } from 'firebase/firestore';
+import type { FirebaseApp } from 'firebase/app';
 
 // ⚠️ Cette clé API est intentionnellement publique (par design Firebase)
 // La sécurité repose sur les règles Firestore, pas sur le masquage de la clé
@@ -15,8 +16,9 @@ const firebaseConfig = {
 
 // Initialiser Firebase (singleton)
 let app;
-let auth;
-let db;
+let auth: Auth;
+let db: Firestore;
+let app: FirebaseApp;
 
 try {
   app = getApp();

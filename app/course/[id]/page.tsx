@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useAuth } from '@/lib/useAuth';
 import { listenCourse, updateCourse } from '@/lib/courses';
-import type { Course, RavitoItem, StockProduit, ResultatCourse } from '@/lib/types';
+import type { Course, Segment, ResultatCourse } from '@/lib/types';
 import AppHeader from '@/components/AppHeader';
 import StatutChip from '@/components/StatutChip';
 import RavitoScreen from '@/components/RavitoScreen';
@@ -57,8 +57,8 @@ export default function CoursePage() {
     );
   }
 
-  const saveRavito = (data: { planRavito: RavitoItem[]; stock: StockProduit[] }) =>
-    updateCourse(id, data);
+  const saveRavito = (segments: Segment[]) =>
+    updateCourse(id, { segments });
   const saveResultat = (resultat: ResultatCourse) =>
     updateCourse(id, { resultat, statut: 'terminee' });
 

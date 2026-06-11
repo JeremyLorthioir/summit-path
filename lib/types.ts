@@ -20,6 +20,7 @@ export interface Segment {
   ordre: number;
   nom: string;
   prises?: string;
+  produits?: SegmentProduit[];
   distanceKm: number;
   distanceDepuisDepartKm?: number;
   distanceSaisie?: 'segment' | 'cumul';
@@ -32,6 +33,24 @@ export interface Segment {
   segmentDeNuit?: boolean;
   remarques?: string;
   materiel?: string;
+}
+
+export interface SegmentProduit {
+  produitId: string;
+  quantite: number;
+}
+
+export interface ProduitGlobal {
+  id: string;
+  ownerUid: string;
+  nom: string;
+  unite: string; // ex: gel, compote, flasque, sachet
+  glucidesParUniteG: number;
+  volumeLiquideMl: number;
+  marque?: string;
+  actif?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface RavitoItem {

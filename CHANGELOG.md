@@ -9,6 +9,10 @@
 - **Libelles auto** - affichage automatise des segments (Depart -> point, point -> point, dernier -> Arrivee)
 - **Segments par defaut** - l'onglet Segments ouvre directement la visualisation complete
 - **UI segments** - alignement visuel renforce avec la maquette (cartes KPI, grille dense, badges, bandeau statut)
+- **Ravitaillement** - modele refondu: 1 segment = 1 ravito, avec selection de produits par segment
+- **Catalogue global** - produits mutualises entre courses (Firestore `products`), edition depuis l'onglet ravito
+- **Synthese ravito** - condensat automatique par produit (quantites, glucides, volume liquide, segments touches)
+- **Style tokens** - extension de `tailwind.config.ts` pour aligner toutes les pages aux couleurs/espacements maquette
 
 ### Corrige
 - **PostCSS** - export `plugins` explicite dans `postcss.config.js` pour Next
