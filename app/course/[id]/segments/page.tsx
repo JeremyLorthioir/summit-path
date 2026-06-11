@@ -52,7 +52,7 @@ export default function SegmentsViewPage() {
         }
       />
 
-      <div className="mx-auto max-w-6xl p-gutter md:p-8">
+      <div className="mx-auto max-w-[1400px] p-gutter md:p-8">
         <SegmentsViewScreen course={course} />
       </div>
     </main>

@@ -10,6 +10,7 @@ import AppHeader from '@/components/AppHeader';
 import StatutChip from '@/components/StatutChip';
 import RavitoScreen from '@/components/RavitoScreen';
 import ResultatScreen from '@/components/ResultatScreen';
+import SegmentsViewScreen from '@/components/SegmentsViewScreen';
 
 type Tab = 'segments' | 'ravito' | 'resultat';
 
@@ -109,19 +110,22 @@ export default function CoursePage() {
         </div>
 
         {tab === 'segments' && (
-          <div className="grid gap-stack-md rounded-xl border border-outline-variant bg-surface-container-lowest p-6 md:grid-cols-2">
-            <Link
-              href={`/course/${id}/segments`}
-              className="rounded-lg border-2 border-outline-variant px-4 py-3 text-body-md font-semibold text-on-surface hover:border-primary"
-            >
-              Ouvrir la visualisation des segments
-            </Link>
-            <Link
-              href={`/course/${id}/segments/edit`}
-              className="rounded-lg bg-primary px-4 py-3 text-body-md font-semibold text-on-primary hover:opacity-90"
-            >
-              Ouvrir le formulaire des segments
-            </Link>
+          <div className="space-y-stack-md">
+            <div className="flex flex-wrap justify-end gap-stack-md">
+              <Link
+                href={`/course/${id}/segments`}
+                className="rounded-lg border-2 border-outline-variant px-4 py-2 text-label-caps uppercase text-on-surface hover:border-primary"
+              >
+                Vue dediee
+              </Link>
+              <Link
+                href={`/course/${id}/segments/edit`}
+                className="rounded-lg bg-primary px-4 py-2 text-label-caps uppercase text-on-primary hover:opacity-90"
+              >
+                Formulaire segments
+              </Link>
+            </div>
+            <SegmentsViewScreen course={course} />
           </div>
         )}
         {tab === 'ravito' && <RavitoScreen course={course} onSave={saveRavito} />}

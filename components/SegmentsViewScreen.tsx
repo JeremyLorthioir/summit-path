@@ -7,100 +7,167 @@ import { segmentDisplayLabel } from '@/lib/segmentLabels';
 export default function SegmentsViewScreen({ course }: { course: Course }) {
   const segments = [...course.segments].sort((a, b) => a.ordre - b.ordre);
   const computed = computeSegments({ ...course, segments });
+  const paceMinPerKmEff = computed.totalKmEffort > 0 ? computed.totalTempsMin / computed.totalKmEffort : 0;
+  const delayedRows = computed.rows.filter((row) => row.margeBarriereMin != null && row.margeBarriereMin < 0);
+  const firstDelayed = delayedRows[0];
 
   return (
     <div className="space-y-stack-lg">
-      <div className="flex items-center justify-between">
-        <h2 className="text-headline-md text-on-surface">Visualisation des segments</h2>
+      <section className="rounded-xl border border-outline-variant bg-surface p-6">
+        <div className="flex flex-wrap items-end justify-between gap-stack-lg">
+          <div>
+            <h2 className="text-headline-lg text-primary">{course.nom || 'Course'}</h2>
+            <p className="text-body-md text-on-surface-variant">Planification segments</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-stack-md md:grid-cols-4">
+            <KpiCard label="Distance totale" value={`${computed.totalDistanceKm.toFixed(1)} km`} />
+            <KpiCard label="D+ total" value={`${computed.totalDplusM.toLocaleString('fr-FR')} m`} tone="tertiary" />
+            <KpiCard label="Temps estime" value={formatDurationClock(computed.totalTempsMin)} />
+            <KpiCard label="Allure estimee" value={`${formatPace(paceMinPerKmEff)} min/km-eff`} />
+          </div>
+        </div>
+      </section>
+
+      <div className="rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm">
+        <div className="grid grid-cols-[1.9fr_0.7fr_0.7fr_0.7fr_0.9fr_0.9fr_0.9fr_1.1fr_0.8fr_1.2fr_1fr_1fr] border-b border-outline-variant bg-surface-container-highest text-label-caps uppercase text-on-secondary-fixed-variant">
+          <HeaderCell>Segment</HeaderCell>
+          <HeaderCell align="center">Dist (km)</HeaderCell>
+          <HeaderCell align="center">D+ (m)</HeaderCell>
+          <HeaderCell align="center">D- (m)</HeaderCell>
+          <HeaderCell align="center">km-eff</HeaderCell>
+          <HeaderCell align="center">Temps</HeaderCell>
+          <HeaderCell align="center">Cumule</HeaderCell>
+          <HeaderCell align="center">Passage</HeaderCell>
+          <HeaderCell align="center">Barriere</HeaderCell>
+          <HeaderCell>Prises</HeaderCell>
+          <HeaderCell>Remarques</HeaderCell>
+          <HeaderCell align="center">Marge</HeaderCell>
+        </div>
+
+        <div className="max-h-[62vh] overflow-y-auto">
+          {segments.length === 0 && (
+            <div className="px-4 py-8 text-center text-body-md text-on-surface-variant">
+              Aucun segment enregistre.
+            </div>
+          )}
+
+          {segments.map((segment, index) => {
+            const row = computed.rows[index];
+            const marge = row?.margeBarriereMin;
+            const isBehind = (marge ?? 0) < 0;
+
+            return (
+              <div
+                key={segment.ordre}
+                className="grid grid-cols-[1.9fr_0.7fr_0.7fr_0.7fr_0.9fr_0.9fr_0.9fr_1.1fr_0.8fr_1.2fr_1fr_1fr] border-b border-outline-variant/70 text-body-md hover:bg-surface-container"
+              >
+                <Cell className="font-semibold text-on-surface">{segmentDisplayLabel(segments, index)}</Cell>
+                <Cell align="center" className="tabular-nums">{segment.distanceKm.toFixed(1)}</Cell>
+                <Cell align="center" className="tabular-nums">{segment.dplusM}</Cell>
+                <Cell align="center" className="tabular-nums">{segment.dmoinsM}</Cell>
+                <Cell align="center" className="tabular-nums text-on-surface-variant">{row?.kmEffort.toFixed(1)}</Cell>
+                <Cell align="center" className="tabular-nums">{formatMinutes(row?.tempsEtapeMin ?? 0)}</Cell>
+                <Cell align="center" className="tabular-nums">{formatMinutes(row?.tempsCumuleMin ?? 0)}</Cell>
+                <Cell align="center" className="tabular-nums">{row?.heurePassage || '-'}</Cell>
+                <Cell align="center" className="tabular-nums">{segment.barriereHoraire || '-'}</Cell>
+                <Cell className="text-on-surface-variant">{segment.prises || '-'}</Cell>
+                <Cell className="text-on-surface-variant">{segment.remarques || '-'}</Cell>
+                <Cell align="center" className="tabular-nums">
+                  {marge == null ? (
+                    <span className="text-on-surface-variant">-</span>
+                  ) : (
+                    <span className={`inline-flex items-center rounded-full px-2 py-1 text-label-caps ${isBehind ? 'bg-error-container text-on-error-container' : 'bg-primary-container text-on-primary-container'}`}>
+                      {isBehind ? 'BEHIND' : 'AHEAD'} {Math.abs(Math.round(marge))}m
+                    </span>
+                  )}
+                </Cell>
+              </div>
+            );
+          })}
+        </div>
+
+        {segments.length > 0 && (
+          <div className="grid grid-cols-[1.9fr_0.7fr_0.7fr_0.7fr_0.9fr_0.9fr_0.9fr_1.1fr_0.8fr_1.2fr_1fr_1fr] border-t-2 border-primary bg-secondary-fixed text-on-secondary-fixed">
+            <Cell className="font-bold">TOTAL COURSE</Cell>
+            <Cell align="center" className="tabular-nums font-semibold">{computed.totalDistanceKm.toFixed(1)}</Cell>
+            <Cell align="center" className="tabular-nums font-semibold">{computed.totalDplusM.toLocaleString('fr-FR')}</Cell>
+            <Cell align="center" className="tabular-nums font-semibold">{computed.totalDmoinsM.toLocaleString('fr-FR')}</Cell>
+            <Cell align="center" className="tabular-nums font-semibold">{computed.totalKmEffort.toFixed(1)}</Cell>
+            <Cell align="center" className="tabular-nums font-semibold">{formatDurationClock(computed.totalTempsMin)}</Cell>
+            <Cell align="center" className="tabular-nums font-semibold">{formatDurationClock(computed.totalTempsMin)}</Cell>
+            <Cell align="center" className="tabular-nums font-semibold">{computed.heureArrivee}</Cell>
+            <Cell />
+            <Cell />
+            <Cell className="text-label-caps uppercase text-on-secondary-fixed-variant">Auto calcule</Cell>
+            <Cell />
+          </div>
+        )}
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-outline-variant bg-surface-container-lowest">
-        <table className="w-full border-collapse text-left text-body-md">
-          <thead>
-            <tr className="border-b border-outline-variant bg-surface-container-low">
-              <Th>#</Th>
-              <Th>Segment</Th>
-              <Th>Dist. (km)</Th>
-              <Th>D+ (m)</Th>
-              <Th>D- (m)</Th>
-              <Th>Km-eff.</Th>
-              <Th>Temps</Th>
-              <Th>Cumul</Th>
-              <Th>Passage</Th>
-              <Th>Barriere</Th>
-              <Th>Nuit</Th>
-              <Th>Marge</Th>
-              <Th>Prises</Th>
-              <Th>Remarques</Th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-outline-variant">
-            {segments.length === 0 && (
-              <tr>
-                <td colSpan={14} className="px-4 py-6 text-center text-on-surface-variant">
-                  Aucun segment enregistre.
-                </td>
-              </tr>
-            )}
-            {segments.map((segment, index) => {
-              const row = computed.rows[index];
-              const marge = row?.margeBarriereMin;
-              return (
-                <tr key={segment.ordre} className="hover:bg-surface-container-lowest">
-                  <td className="px-3 py-2 tabular-nums text-on-surface-variant">{index + 1}</td>
-                  <td className="px-3 py-2 font-medium text-on-surface">{segmentDisplayLabel(segments, index)}</td>
-                  <td className="px-3 py-2 tabular-nums">{segment.distanceKm.toFixed(1)}</td>
-                  <td className="px-3 py-2 tabular-nums">{segment.dplusM}</td>
-                  <td className="px-3 py-2 tabular-nums">{segment.dmoinsM}</td>
-                  <td className="px-3 py-2 tabular-nums">{row?.kmEffort.toFixed(1)}</td>
-                  <td className="px-3 py-2 tabular-nums">{formatMinutes(row?.tempsEtapeMin ?? 0)}</td>
-                  <td className="px-3 py-2 tabular-nums">{formatMinutes(row?.tempsCumuleMin ?? 0)}</td>
-                  <td className="px-3 py-2 tabular-nums">{row?.heurePassage ?? '—'}</td>
-                  <td className="px-3 py-2 tabular-nums">{segment.barriereHoraire || '—'}</td>
-                  <td className="px-3 py-2 tabular-nums">{segment.segmentDeNuit ? 'Oui' : 'Non'}</td>
-                  <td className="px-3 py-2 tabular-nums">
-                    {marge == null ? (
-                      <span className="text-on-surface-variant">—</span>
-                    ) : (
-                      <span className={marge < 0 ? 'font-semibold text-error' : 'font-semibold text-primary'}>
-                        {marge >= 0 ? '+' : ''}
-                        {Math.round(marge)} min
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-3 py-2 text-on-surface-variant">{segment.prises || '—'}</td>
-                  <td className="px-3 py-2 text-on-surface-variant">{segment.remarques || '—'}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-          {segments.length > 0 && (
-            <tfoot>
-              <tr className="border-t-2 border-outline-variant bg-surface-container-low font-semibold">
-                <td className="px-3 py-3" colSpan={2}>
-                  Total
-                </td>
-                <td className="px-3 py-3 tabular-nums">{computed.totalDistanceKm.toFixed(1)}</td>
-                <td className="px-3 py-3 tabular-nums">{computed.totalDplusM}</td>
-                <td className="px-3 py-3 tabular-nums">{computed.totalDmoinsM}</td>
-                <td className="px-3 py-3 tabular-nums">{computed.totalKmEffort.toFixed(1)}</td>
-                <td className="px-3 py-3 tabular-nums">{formatMinutes(computed.totalTempsMin)}</td>
-                <td className="px-3 py-3" />
-                <td className="px-3 py-3 tabular-nums">{computed.heureArrivee}</td>
-                <td colSpan={5} />
-              </tr>
-            </tfoot>
+      <div className="flex items-center justify-between rounded-xl border border-outline bg-inverse-surface px-5 py-3 text-inverse-on-surface shadow-sm">
+        <div className="flex items-center gap-stack-md">
+          <span className="h-2.5 w-2.5 rounded-full bg-primary-fixed-dim" />
+          <span className="text-label-caps uppercase">Planning actif</span>
+          {firstDelayed && (
+            <span className="text-body-md text-inverse-on-surface">
+              Alerte: {firstDelayed.segment.nom || 'Segment'} est derriere la barriere
+            </span>
           )}
-        </table>
+        </div>
+        <span className="text-label-caps uppercase text-inverse-on-surface/80">
+          {delayedRows.length > 0 ? `${delayedRows.length} segment(s) en retard` : 'Toutes les barrieres sont ok'}
+        </span>
       </div>
     </div>
   );
 }
 
-function Th({ children }: { children: React.ReactNode }) {
+function KpiCard({
+  label,
+  value,
+  tone = 'default',
+}: {
+  label: string;
+  value: string;
+  tone?: 'default' | 'tertiary';
+}) {
   return (
-    <th className="whitespace-nowrap px-3 py-3 text-label-caps uppercase text-on-surface-variant">
-      {children}
-    </th>
+    <div className="rounded-lg border border-outline-variant bg-surface-container-low p-3">
+      <span className="block text-label-caps uppercase text-on-surface-variant">{label}</span>
+      <span className={`block text-headline-md ${tone === 'tertiary' ? 'text-tertiary' : 'text-on-surface'}`}>
+        {value}
+      </span>
+    </div>
   );
+}
+
+function HeaderCell({ children, align = 'left' }: { children: any; align?: 'left' | 'center' }) {
+  return <div className={`px-3 py-3 ${align === 'center' ? 'text-center' : ''}`}>{children}</div>;
+}
+
+function Cell({
+  children,
+  align = 'left',
+  className = '',
+}: {
+  children?: any;
+  align?: 'left' | 'center';
+  className?: string;
+}) {
+  return <div className={`px-3 py-3 ${align === 'center' ? 'text-center' : ''} ${className}`}>{children}</div>;
+}
+
+function formatDurationClock(minutes: number): string {
+  const total = Math.round(minutes);
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
+function formatPace(minPerKm: number): string {
+  if (!isFinite(minPerKm) || minPerKm <= 0) return '0:00';
+  const m = Math.floor(minPerKm);
+  const s = Math.round((minPerKm - m) * 60);
+  return `${m}:${String(s).padStart(2, '0')}`;
 }

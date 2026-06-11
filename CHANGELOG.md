@@ -7,6 +7,8 @@
 - **Segments** - ajout de la saisie distance/denivele en mode segment ou cumul depuis depart
 - **Parcours segments** - separation en page visualisation et page formulaire dediees
 - **Libelles auto** - affichage automatise des segments (Depart -> point, point -> point, dernier -> Arrivee)
+- **Segments par defaut** - l'onglet Segments ouvre directement la visualisation complete
+- **UI segments** - alignement visuel renforce avec la maquette (cartes KPI, grille dense, badges, bandeau statut)
 
 ### Corrige
 - **PostCSS** - export `plugins` explicite dans `postcss.config.js` pour Next
