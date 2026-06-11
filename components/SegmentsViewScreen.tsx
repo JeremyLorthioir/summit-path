@@ -108,7 +108,7 @@ export default function SegmentsViewScreen({ course }: { course: Course }) {
                     <span className="text-on-surface-variant">-</span>
                   ) : (
                     <span className={`inline-flex items-center rounded-full px-2 py-1 text-label-caps ${isBehind ? 'bg-error-container text-on-error-container' : 'bg-primary-container text-on-primary-container'}`}>
-                      {isBehind ? 'BEHIND' : 'AHEAD'} {Math.abs(Math.round(marge))}m
+                      {isBehind ? 'BEHIND' : 'AHEAD'} {formatMinutes(Math.abs(marge))}
                     </span>
                   )}
                 </Cell>

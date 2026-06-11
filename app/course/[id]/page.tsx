@@ -11,6 +11,7 @@ import StatutChip from '@/components/StatutChip';
 import RavitoScreen from '@/components/RavitoScreen';
 import ResultatScreen from '@/components/ResultatScreen';
 import SegmentsViewScreen from '@/components/SegmentsViewScreen';
+import { computeSegments, formatMinutes } from '@/lib/courseCalc';
 
 type Tab = 'segments' | 'ravito' | 'resultat';
 
@@ -61,16 +62,18 @@ export default function CoursePage() {
     updateCourse(id, { segments });
   const saveResultat = (resultat: ResultatCourse) =>
     updateCourse(id, { resultat, statut: 'terminee' });
+  const computed = computeSegments(course);
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="relative min-h-screen overflow-hidden bg-background">
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_20%,rgba(15,127,255,0.12),transparent_35%),radial-gradient(circle_at_85%_0%,rgba(9,166,109,0.12),transparent_33%)]" />
       <AppHeader
         title={course.nom || 'Course'}
         backHref="/dashboard"
         actions={
           <Link
             href={`/course/${id}/edit`}
-            className="rounded-lg border-2 border-outline-variant px-4 py-2 text-label-caps uppercase text-on-surface hover:border-primary"
+            className="rounded-xl border border-outline-variant bg-surface px-4 py-2 text-label-caps uppercase text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary"
           >
             Éditer
           </Link>
@@ -78,7 +81,27 @@ export default function CoursePage() {
       />
 
       <div className="mx-auto max-w-6xl space-y-stack-lg p-gutter md:p-8">
-        <div className="flex flex-wrap items-center gap-stack-md">
+        <section className="grid gap-stack-md rounded-2xl border border-outline-variant/70 bg-surface/85 p-stack-lg shadow-sm backdrop-blur md:grid-cols-[1.6fr_1fr]">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-stack-md">
+              <StatutChip statut={course.statut} />
+              <span className="rounded-full bg-surface-container-low px-3 py-1 text-label-caps uppercase text-on-surface-variant">
+                {course.date || 'Date non définie'}
+              </span>
+            </div>
+            <p className="text-body-md text-on-surface-variant">
+              Départ {course.heureDepart || '—'} · allure cible {course.allureCible} min/km-eff · objectif {course.objectifGlucidesParHeure} g/h
+            </p>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2 rounded-xl border border-outline-variant bg-surface-container-low p-3">
+            <TopMetric label="Distance" value={`${computed.totalDistanceKm.toFixed(1)} km`} />
+            <TopMetric label="D+" value={`${computed.totalDplusM} m`} />
+            <TopMetric label="Temps plan" value={formatMinutes(computed.totalTempsMin)} />
+          </div>
+        </section>
+
+        <div className="hidden flex-wrap items-center gap-stack-md">
           <StatutChip statut={course.statut} />
           <span className="text-body-md text-on-surface-variant">
             {course.date || 'Date non définie'} · départ {course.heureDepart || '—'} · allure cible{' '}
@@ -93,15 +116,15 @@ export default function CoursePage() {
         )}
 
         {/* Onglets */}
-        <div className="flex gap-base border-b border-outline-variant">
+        <div className="flex flex-wrap gap-2 rounded-2xl border border-outline-variant bg-surface p-2 shadow-sm">
           {TABS.map((t) => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`px-4 py-3 text-label-caps uppercase transition-colors ${
+              className={`rounded-xl px-4 py-2 text-label-caps uppercase transition-all ${
                 tab === t.id
-                  ? 'border-b-2 border-primary text-primary'
-                  : 'text-on-surface-variant hover:text-primary'
+                  ? 'bg-primary text-on-primary shadow-sm'
+                  : 'text-on-surface-variant hover:bg-surface-container-low hover:text-primary'
               }`}
             >
               {t.label}
@@ -132,5 +155,14 @@ export default function CoursePage() {
         {tab === 'resultat' && <ResultatScreen course={course} onSave={saveResultat} />}
       </div>
     </main>
+  );
+}
+
+function TopMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg bg-surface px-3 py-2 text-center">
+      <span className="block text-label-caps uppercase text-on-surface-variant">{label}</span>
+      <span className="block text-body-lg font-semibold tabular-nums text-on-surface">{value}</span>
+    </div>
   );
 }

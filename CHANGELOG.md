@@ -18,6 +18,8 @@
 - **Recap nuit** - affichage explicite du statut nuit sur la page recap segments
 - **Recap imprimable** - ajout d'un mode impression de la fiche segments avec bouton dedie
 - **Produits recap** - ajout d'une section "produits par segment" dans la fiche recap
+- **Durees harmonisees** - affichage des temps en heures/minutes partout des que > 60 min
+- **UI course** - design renforce (hero metriques, onglets pills, fond atmospherique)
 
 ### Corrige
 - **PostCSS** - export `plugins` explicite dans `postcss.config.js` pour Next

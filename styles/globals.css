@@ -9,9 +9,12 @@
 }
 
 html, body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Manrope', 'Avenir Next', 'Segoe UI', sans-serif;
   color: var(--on-background, #0b1c30);
   background-color: var(--background, #f8f9ff);
+  background-image:
+    radial-gradient(circle at 8% 12%, rgba(12, 128, 255, 0.08), transparent 28%),
+    radial-gradient(circle at 92% 0%, rgba(0, 157, 102, 0.06), transparent 24%);
 }
 
 /* Tabular figures pour les données numériques */

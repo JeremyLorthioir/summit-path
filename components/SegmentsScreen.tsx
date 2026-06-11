@@ -293,8 +293,7 @@ export default function SegmentsScreen({
                       <span className="text-on-surface-variant">—</span>
                     ) : (
                       <span className={marge < 0 ? 'font-semibold text-error' : 'font-semibold text-primary'}>
-                        {marge >= 0 ? '+' : ''}
-                        {Math.round(marge)} min
+                        {formatSignedMinutes(marge)}
                       </span>
                     )}
                   </td>
@@ -411,4 +410,9 @@ function Calc({ children }: { children?: React.ReactNode }) {
       {children}
     </td>
   );
+}
+
+function formatSignedMinutes(minutes: number): string {
+  const absValue = formatMinutes(Math.abs(minutes));
+  return `${minutes >= 0 ? '+' : '-'}${absValue}`;
 }

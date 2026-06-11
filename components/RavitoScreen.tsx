@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import type { Course, ProduitGlobal, Segment, SegmentProduit } from '@/lib/types';
 import { listenProducts } from '@/lib/products';
-import { computeProduitSummary, computeSegments } from '@/lib/courseCalc';
+import { computeProduitSummary, computeSegments, formatMinutes } from '@/lib/courseCalc';
 import { segmentDisplayLabel } from '@/lib/segmentLabels';
 
 export default function RavitoScreen({
@@ -156,7 +156,7 @@ export default function RavitoScreen({
                     {segmentDisplayLabel(segments, segmentIndex)}
                   </h4>
                   <p className="text-body-md text-on-surface-variant">
-                    Passage estime: {row?.heurePassage || '-'} - Temps cumule: {row ? Math.round(row.tempsCumuleMin) : 0} min
+                    Passage estime: {row?.heurePassage || '-'} - Temps cumule: {formatMinutes(row?.tempsCumuleMin ?? 0)}
                   </p>
                 </div>
                 <button
