@@ -16,6 +16,8 @@
 - **Catalogue dedie** - nouvelle page `products` pour gerer les produits globaux hors course
 - **Ravito simplifie** - onglet ravitaillement recentre sur selection par segment + synthese
 - **Recap nuit** - affichage explicite du statut nuit sur la page recap segments
+- **Recap imprimable** - ajout d'un mode impression de la fiche segments avec bouton dedie
+- **Produits recap** - ajout d'une section "produits par segment" dans la fiche recap
 
 ### Corrige
 - **PostCSS** - export `plugins` explicite dans `postcss.config.js` pour Next
@@ -23,3 +25,4 @@
 - **Build Next** - suppression du bloc `webpack` obsolete dans `next.config.js` pour compatibilite Turbopack
 - **Import CSV** - import des segments depuis CSV Excel avec mapping auto des colonnes distance et denivele
 - **Prises segment** - ajout d'un champ prises en formulaire, visualisation et import CSV
+- **Firebase** - suppression d'une double declaration de `app` dans `lib/firebase.ts`

@@ -15,10 +15,9 @@ const firebaseConfig = {
 };
 
 // Initialiser Firebase (singleton)
-let app;
+let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
-let app: FirebaseApp;
 
 try {
   app = getApp();

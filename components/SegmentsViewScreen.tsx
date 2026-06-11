@@ -1,24 +1,45 @@
 'use client';
 
-import type { Course } from '@/lib/types';
+import { useEffect, useMemo, useState } from 'react';
+import type { Course, ProduitGlobal, SegmentProduit } from '@/lib/types';
 import { computeSegments, formatMinutes } from '@/lib/courseCalc';
 import { segmentDisplayLabel } from '@/lib/segmentLabels';
+import { listenProducts } from '@/lib/products';
 
 export default function SegmentsViewScreen({ course }: { course: Course }) {
   const segments = [...course.segments].sort((a, b) => a.ordre - b.ordre);
   const computed = computeSegments({ ...course, segments });
+  const [catalog, setCatalog] = useState<ProduitGlobal[]>([]);
   const paceMinPerKmEff = computed.totalKmEffort > 0 ? computed.totalTempsMin / computed.totalKmEffort : 0;
   const delayedRows = computed.rows.filter((row) => row.margeBarriereMin != null && row.margeBarriereMin < 0);
   const firstDelayed = delayedRows[0];
 
+  useEffect(() => {
+    if (!course.ownerUid) return;
+    const unsubscribe = listenProducts(course.ownerUid, (rows) => setCatalog(rows));
+    return () => unsubscribe();
+  }, [course.ownerUid]);
+
+  const catalogMap = useMemo(() => {
+    return new Map(catalog.map((product: ProduitGlobal) => [product.id, product]));
+  }, [catalog]);
+
   return (
-    <div className="space-y-stack-lg">
+    <div className="space-y-stack-lg print:space-y-4">
       <section className="rounded-xl border border-outline-variant bg-surface p-6">
         <div className="flex flex-wrap items-end justify-between gap-stack-lg">
           <div>
             <h2 className="text-headline-lg text-primary">{course.nom || 'Course'}</h2>
             <p className="text-body-md text-on-surface-variant">Planification segments</p>
           </div>
+
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="rounded-lg border-2 border-outline-variant px-4 py-2 text-label-caps uppercase text-on-surface hover:border-primary print:hidden"
+          >
+            Imprimer la fiche recap
+          </button>
 
           <div className="grid grid-cols-2 gap-stack-md md:grid-cols-4">
             <KpiCard label="Distance totale" value={`${computed.totalDistanceKm.toFixed(1)} km`} />
@@ -114,7 +135,28 @@ export default function SegmentsViewScreen({ course }: { course: Course }) {
         )}
       </div>
 
-      <div className="flex items-center justify-between rounded-xl border border-outline bg-inverse-surface px-5 py-3 text-inverse-on-surface shadow-sm">
+      {segments.length > 0 && (
+        <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-stack-lg">
+          <h3 className="text-body-lg font-semibold text-on-surface">Produits par segment</h3>
+          <div className="mt-stack-md space-y-2">
+            {segments.map((segment, index) => (
+              <div
+                key={`products-${segment.ordre}`}
+                className="rounded-lg border border-outline-variant bg-surface-container-low p-3"
+              >
+                <div className="text-label-caps uppercase text-on-surface-variant">
+                  {segmentDisplayLabel(segments, index)}
+                </div>
+                <div className="mt-1 text-body-md text-on-surface">
+                  {formatSegmentProducts(segment.produits, catalogMap)}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <div className="flex items-center justify-between rounded-xl border border-outline bg-inverse-surface px-5 py-3 text-inverse-on-surface shadow-sm print:hidden">
         <div className="flex items-center gap-stack-md">
           <span className="h-2.5 w-2.5 rounded-full bg-primary-fixed-dim" />
           <span className="text-label-caps uppercase">Planning actif</span>
@@ -179,4 +221,19 @@ function formatPace(minPerKm: number): string {
   const m = Math.floor(minPerKm);
   const s = Math.round((minPerKm - m) * 60);
   return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function formatSegmentProducts(
+  items: SegmentProduit[] | undefined,
+  catalogMap: Map<string, ProduitGlobal>
+): string {
+  if (!items || items.length === 0) return 'Aucun produit';
+  return items
+    .filter((item) => item.quantite > 0)
+    .map((item) => {
+      const product = catalogMap.get(item.produitId);
+      if (!product) return `${item.quantite} x produit (${item.produitId})`;
+      return `${item.quantite} x ${product.nom} (${product.unite})`;
+    })
+    .join('  ·  ');
 }
