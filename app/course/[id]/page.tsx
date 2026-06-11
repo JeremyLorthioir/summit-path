@@ -5,10 +5,9 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useAuth } from '@/lib/useAuth';
 import { listenCourse, updateCourse } from '@/lib/courses';
-import type { Course, Segment, RavitoItem, StockProduit, ResultatCourse } from '@/lib/types';
+import type { Course, RavitoItem, StockProduit, ResultatCourse } from '@/lib/types';
 import AppHeader from '@/components/AppHeader';
 import StatutChip from '@/components/StatutChip';
-import SegmentsScreen from '@/components/SegmentsScreen';
 import RavitoScreen from '@/components/RavitoScreen';
 import ResultatScreen from '@/components/ResultatScreen';
 
@@ -57,7 +56,6 @@ export default function CoursePage() {
     );
   }
 
-  const saveSegments = (segments: Segment[]) => updateCourse(id, { segments });
   const saveRavito = (data: { planRavito: RavitoItem[]; stock: StockProduit[] }) =>
     updateCourse(id, data);
   const saveResultat = (resultat: ResultatCourse) =>
@@ -110,7 +108,22 @@ export default function CoursePage() {
           ))}
         </div>
 
-        {tab === 'segments' && <SegmentsScreen course={course} onSave={saveSegments} />}
+        {tab === 'segments' && (
+          <div className="grid gap-stack-md rounded-xl border border-outline-variant bg-surface-container-lowest p-6 md:grid-cols-2">
+            <Link
+              href={`/course/${id}/segments`}
+              className="rounded-lg border-2 border-outline-variant px-4 py-3 text-body-md font-semibold text-on-surface hover:border-primary"
+            >
+              Ouvrir la visualisation des segments
+            </Link>
+            <Link
+              href={`/course/${id}/segments/edit`}
+              className="rounded-lg bg-primary px-4 py-3 text-body-md font-semibold text-on-primary hover:opacity-90"
+            >
+              Ouvrir le formulaire des segments
+            </Link>
+          </div>
+        )}
         {tab === 'ravito' && <RavitoScreen course={course} onSave={saveRavito} />}
         {tab === 'resultat' && <ResultatScreen course={course} onSave={saveResultat} />}
       </div>

@@ -19,9 +19,15 @@ export interface Course {
 export interface Segment {
   ordre: number;
   nom: string;
+  prises?: string;
   distanceKm: number;
+  distanceDepuisDepartKm?: number;
+  distanceSaisie?: 'segment' | 'cumul';
   dplusM: number;
+  dplusCumuleM?: number;
   dmoinsM: number;
+  dmoinsCumuleM?: number;
+  deniveleSaisie?: 'segment' | 'cumul';
   barriereHoraire?: string;      // "13:50"
   segmentDeNuit?: boolean;
   remarques?: string;
