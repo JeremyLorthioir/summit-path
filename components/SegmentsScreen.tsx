@@ -10,6 +10,7 @@ import {
   type SegmentInputModes,
 } from '@/lib/segmentImport';
 import { segmentDisplayLabel } from '@/lib/segmentLabels';
+import { getMargeLevel, margeTextClass } from '@/lib/displayHelpers';
 
 const emptySegment = (ordre: number): Segment => ({
   ordre,
@@ -292,7 +293,7 @@ export default function SegmentsScreen({
                     {marge == null ? (
                       <span className="text-on-surface-variant">—</span>
                     ) : (
-                      <span className={marge < 0 ? 'font-semibold text-error' : 'font-semibold text-primary'}>
+                      <span className={margeTextClass(getMargeLevel(marge))}>
                         {formatSignedMinutes(marge)}
                       </span>
                     )}

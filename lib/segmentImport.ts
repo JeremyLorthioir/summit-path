@@ -133,8 +133,8 @@ export function normalizeSegments(
 
     const normalizedSegment: Segment = {
       ordre: index + 1,
-      nom: (segment.nom ?? '').trim(),
-      prises: (segment.prises ?? '').trim(),
+      nom: segment.nom ?? '',
+      prises: segment.prises ?? '',
       distanceKm: round(distanceCumule - cumulDistance, 3),
       distanceDepuisDepartKm: round(distanceCumule, 3),
       distanceSaisie: distanceMode,

@@ -5,6 +5,11 @@ import type { Course, ProduitGlobal, SegmentProduit } from '@/lib/types';
 import { computeSegments, formatMinutes } from '@/lib/courseCalc';
 import { segmentDisplayLabel } from '@/lib/segmentLabels';
 import { listenProducts } from '@/lib/products';
+import {
+  getMargeLevel,
+  margeBadgeClass,
+  productChipClass,
+} from '@/lib/displayHelpers';
 
 export default function SegmentsViewScreen({ course }: { course: Course }) {
   const segments = [...course.segments].sort((a, b) => a.ordre - b.ordre);
@@ -66,7 +71,7 @@ export default function SegmentsViewScreen({ course }: { course: Course }) {
           <HeaderCell align="center">Marge</HeaderCell>
         </div>
 
-        <div className="max-h-[62vh] overflow-y-auto">
+        <div className="max-h-[62vh] overflow-y-auto print:max-h-none print:overflow-visible">
           {segments.length === 0 && (
             <div className="px-4 py-8 text-center text-body-md text-on-surface-variant">
               Aucun segment enregistre.
@@ -101,15 +106,23 @@ export default function SegmentsViewScreen({ course }: { course: Course }) {
                 <Cell align="center" className="tabular-nums">{formatMinutes(row?.tempsCumuleMin ?? 0)}</Cell>
                 <Cell align="center" className="tabular-nums">{row?.heurePassage || '-'}</Cell>
                 <Cell align="center" className="tabular-nums">{segment.barriereHoraire || '-'}</Cell>
-                <Cell className="text-on-surface-variant">{formatSegmentProducts(segment.produits, catalogMap)}</Cell>
+                <Cell className="text-on-surface-variant">
+                  <SegmentProductsPills items={segment.produits} catalogMap={catalogMap} />
+                </Cell>
                 <Cell className="text-on-surface-variant">{segment.remarques || '-'}</Cell>
                 <Cell align="center" className="tabular-nums">
                   {marge == null ? (
                     <span className="text-on-surface-variant">-</span>
                   ) : (
-                    <span className={`inline-flex items-center rounded-full px-2 py-1 text-label-caps ${isBehind ? 'bg-error-container text-on-error-container' : 'bg-primary-container text-on-primary-container'}`}>
-                      {isBehind ? 'BEHIND' : 'AHEAD'} {formatMinutes(Math.abs(marge))}
-                    </span>
+                    (() => {
+                      const level = getMargeLevel(marge);
+                      return (
+                        <span className={`inline-flex items-center rounded-full px-2 py-1 text-label-caps ${margeBadgeClass(level)}`}>
+                          {isBehind ? '- ' : '+ '}
+                          {formatMinutes(Math.abs(marge))}
+                        </span>
+                      );
+                    })()
                   )}
                 </Cell>
               </div>
@@ -202,18 +215,34 @@ function formatPace(minPerKm: number): string {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-function formatSegmentProducts(
-  items: SegmentProduit[] | undefined,
-  catalogMap: Map<string, ProduitGlobal>
-): string {
-  if (!items || items.length === 0) return 'Aucun produit';
-  const rendered = items
-    .filter((item) => item.quantite > 0)
-    .map((item) => {
-      const product = catalogMap.get(item.produitId);
-      if (!product) return `${item.quantite} x produit (${item.produitId})`;
-      return `${item.quantite} x ${product.nom} (${product.unite})`;
-    });
-
-  return rendered.length > 0 ? rendered.join('  ·  ') : 'Aucun produit';
+function SegmentProductsPills({
+  items,
+  catalogMap,
+}: {
+  items: SegmentProduit[] | undefined;
+  catalogMap: Map<string, ProduitGlobal>;
+}) {
+  const filtered = (items ?? []).filter((item) => item.quantite > 0);
+  if (filtered.length === 0) {
+    return <span className="text-on-surface-variant">Aucun produit</span>;
+  }
+  return (
+    <div className="flex flex-wrap gap-1">
+      {filtered.map((item, index) => {
+        const product = catalogMap.get(item.produitId);
+        const label = product?.nom ?? `Produit ${item.produitId}`;
+        return (
+          <span
+            key={`${item.produitId}-${index}`}
+            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-label-caps ${productChipClass(
+              product?.unite
+            )}`}
+          >
+            <span className="font-semibold tabular-nums">{item.quantite}×</span>
+            <span>{label}</span>
+          </span>
+        );
+      })}
+    </div>
+  );
 }

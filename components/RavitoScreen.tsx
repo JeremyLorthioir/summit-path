@@ -6,6 +6,13 @@ import type { Course, ProduitGlobal, Segment, SegmentProduit } from '@/lib/types
 import { listenProducts } from '@/lib/products';
 import { computeProduitSummary, computeSegments, formatMinutes } from '@/lib/courseCalc';
 import { segmentDisplayLabel } from '@/lib/segmentLabels';
+import {
+  besoinsTheoriquesSegment,
+  LIQUIDE_CIBLE_ML_PAR_HEURE,
+  pctCouverture,
+  pctCouvertureClass,
+  productChipClass,
+} from '@/lib/displayHelpers';
 
 export default function RavitoScreen({
   course,
@@ -145,98 +152,99 @@ export default function RavitoScreen({
 
         {segments.map((segment, segmentIndex) => {
           const row = computedSegments.rows[segmentIndex];
+          const dureeMin = row?.tempsEtapeMin ?? 0;
+          const besoins = besoinsTheoriquesSegment(dureeMin, course.objectifGlucidesParHeure);
+          const items = segment.produits ?? [];
+          const totalGlucides = items.reduce((acc, item) => {
+            const product = productById.get(item.produitId);
+            return acc + (product?.glucidesParUniteG ?? 0) * (item.quantite || 0);
+          }, 0);
+          const totalLiquide = items.reduce((acc, item) => {
+            const product = productById.get(item.produitId);
+            return acc + (product?.volumeLiquideMl ?? 0) * (item.quantite || 0);
+          }, 0);
+          const pctGlu = pctCouverture(totalGlucides, besoins.glucidesG);
+          const pctLiq = pctCouverture(totalLiquide, besoins.liquideMl);
+
           return (
             <article
               key={segment.ordre}
               className="rounded-xl border border-outline-variant bg-surface-container-lowest p-stack-md"
             >
-              <div className="flex flex-wrap items-center justify-between gap-stack-sm">
-                <div>
+              <header className="flex flex-wrap items-start justify-between gap-stack-sm">
+                <div className="min-w-0 flex-1">
                   <h4 className="text-body-lg font-semibold text-on-surface">
                     {segmentDisplayLabel(segments, segmentIndex)}
                   </h4>
-                  <p className="text-body-md text-on-surface-variant">
-                    Passage estime: {row?.heurePassage || '-'} - Temps cumule: {formatMinutes(row?.tempsCumuleMin ?? 0)}
-                  </p>
+                  <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-body-md text-on-surface-variant">
+                    <span>
+                      <span className="font-semibold text-on-surface">{segment.distanceKm.toFixed(1)}</span> km
+                    </span>
+                    <span>
+                      D+ <span className="font-semibold text-on-surface">{segment.dplusM}</span> m
+                    </span>
+                    <span>
+                      Durée <span className="font-semibold text-on-surface">{formatMinutes(dureeMin)}</span>
+                    </span>
+                    <span>
+                      Passage <span className="font-semibold text-on-surface">{row?.heurePassage || '-'}</span>
+                    </span>
+                    <span>
+                      Cumul <span className="font-semibold text-on-surface">{formatMinutes(row?.tempsCumuleMin ?? 0)}</span>
+                    </span>
+                  </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => addProduitToSegment(segmentIndex)}
                   disabled={catalog.length === 0}
-                  className="rounded-lg border-2 border-outline-variant px-3 py-2 text-label-caps uppercase text-on-surface hover:border-primary"
+                  className="rounded-lg border-2 border-outline-variant px-3 py-2 text-label-caps uppercase text-on-surface hover:border-primary disabled:opacity-50"
                 >
                   + Produit
                 </button>
+              </header>
+
+              <div className="mt-stack-sm grid grid-cols-1 gap-2 rounded-lg bg-surface-container-low/60 p-3 text-body-md md:grid-cols-2">
+                <NeedRow
+                  label="Glucides"
+                  actuel={`${Math.round(totalGlucides)} g`}
+                  cible={`${Math.round(besoins.glucidesG)} g`}
+                  pct={pctGlu}
+                  hint={`Cible : ${course.objectifGlucidesParHeure} g/h`}
+                />
+                <NeedRow
+                  label="Liquide"
+                  actuel={`${Math.round(totalLiquide)} ml`}
+                  cible={`${Math.round(besoins.liquideMl)} ml`}
+                  pct={pctLiq}
+                  hint={`Cible : ${LIQUIDE_CIBLE_ML_PAR_HEURE} ml/h`}
+                />
               </div>
 
-              <div className="mt-stack-sm overflow-x-auto">
-                <table className="w-full border-collapse text-left text-body-md">
-                  <thead>
-                    <tr className="border-b border-outline-variant bg-surface-container-low">
-                      <Th>Produit</Th>
-                      <Th>Qte</Th>
-                      <Th>Glucides</Th>
-                      <Th>Liquide</Th>
-                      <Th></Th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-outline-variant">
-                    {(segment.produits ?? []).length === 0 && (
-                      <tr>
-                        <td colSpan={5} className="px-3 py-4 text-on-surface-variant">
-                          Aucun produit selectionne pour ce segment.
-                        </td>
-                      </tr>
-                    )}
-
-                    {(segment.produits ?? []).map((item, itemIndex) => {
-                      const product = productById.get(item.produitId);
-                      const glucides = (product?.glucidesParUniteG ?? 0) * item.quantite;
-                      const liquide = (product?.volumeLiquideMl ?? 0) * item.quantite;
-                      return (
-                        <tr key={`${segment.ordre}-${itemIndex}`}>
-                          <td className="px-2 py-2">
-                            <select
-                              value={item.produitId}
-                              onChange={(e) =>
-                                updateProduitFromSegment(segmentIndex, itemIndex, {
-                                  produitId: e.target.value,
-                                })
-                              }
-                              className={cellInput + ' min-w-[12rem]'}
-                            >
-                              {catalog.length === 0 && <option value="">Aucun produit</option>}
-                              {catalog.map((productOption) => (
-                                <option key={productOption.id} value={productOption.id}>
-                                  {productOption.nom}
-                                </option>
-                              ))}
-                            </select>
-                          </td>
-                          <td className="px-2 py-2">
-                            <NumInput
-                              value={item.quantite}
-                              onChange={(value) =>
-                                updateProduitFromSegment(segmentIndex, itemIndex, { quantite: value })
-                              }
-                            />
-                          </td>
-                          <td className="px-3 py-2 tabular-nums text-on-surface-variant">{Math.round(glucides)} g</td>
-                          <td className="px-3 py-2 tabular-nums text-on-surface-variant">{Math.round(liquide)} ml</td>
-                          <td className="px-2 py-2 text-center">
-                            <button
-                              type="button"
-                              onClick={() => removeProduitFromSegment(segmentIndex, itemIndex)}
-                              className="text-error hover:underline"
-                            >
-                              x
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+              <div className="mt-stack-sm">
+                {items.length === 0 ? (
+                  <p className="rounded-lg border border-dashed border-outline-variant px-3 py-3 text-body-md text-on-surface-variant">
+                    Aucun produit sélectionné pour ce segment.
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {items.map((item, itemIndex) => (
+                      <ProductChip
+                        key={`${segment.ordre}-${itemIndex}`}
+                        item={item}
+                        catalog={catalog}
+                        product={productById.get(item.produitId)}
+                        onChangeProduct={(produitId) =>
+                          updateProduitFromSegment(segmentIndex, itemIndex, { produitId })
+                        }
+                        onChangeQuantite={(quantite) =>
+                          updateProduitFromSegment(segmentIndex, itemIndex, { quantite })
+                        }
+                        onRemove={() => removeProduitFromSegment(segmentIndex, itemIndex)}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </article>
           );
@@ -291,19 +299,108 @@ export default function RavitoScreen({
   );
 }
 
-const cellInput =
-  'w-full rounded border border-outline-variant bg-surface-container-lowest px-2 py-1 text-body-md focus:border-primary focus:outline-none';
+function ProductChip({
+  item,
+  product,
+  catalog,
+  onChangeProduct,
+  onChangeQuantite,
+  onRemove,
+}: {
+  item: SegmentProduit;
+  product: ProduitGlobal | undefined;
+  catalog: ProduitGlobal[];
+  onChangeProduct: (produitId: string) => void;
+  onChangeQuantite: (quantite: number) => void;
+  onRemove: () => void;
+}) {
+  const color = productChipClass(product?.unite);
+  const macros: string[] = [];
+  if (product?.glucidesParUniteG) macros.push(`${product.glucidesParUniteG}g gluc.`);
+  if (product?.volumeLiquideMl) macros.push(`${product.volumeLiquideMl}ml`);
 
-function NumInput({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   return (
-    <input
-      type="number"
-      min="0"
-      step="1"
-      value={value}
-      onChange={(e) => onChange(Number(e.target.value) || 0)}
-      className={cellInput + ' w-20 tabular-nums'}
-    />
+    <div
+      className={`inline-flex items-center gap-2 rounded-full border px-2 py-1 text-body-md shadow-sm ${color}`}
+    >
+      <div className="flex items-center gap-0.5">
+        <button
+          type="button"
+          onClick={() => onChangeQuantite(Math.max(0, (item.quantite || 0) - 1))}
+          className="flex h-6 w-6 items-center justify-center rounded-full bg-white/60 text-base font-bold leading-none hover:bg-white"
+          aria-label="Diminuer la quantité"
+        >
+          −
+        </button>
+        <span className="min-w-[1.5rem] text-center font-semibold tabular-nums">{item.quantite}</span>
+        <button
+          type="button"
+          onClick={() => onChangeQuantite((item.quantite || 0) + 1)}
+          className="flex h-6 w-6 items-center justify-center rounded-full bg-white/60 text-base font-bold leading-none hover:bg-white"
+          aria-label="Augmenter la quantité"
+        >
+          +
+        </button>
+      </div>
+      <select
+        value={item.produitId}
+        onChange={(e) => onChangeProduct(e.target.value)}
+        className="max-w-[10rem] truncate rounded bg-transparent px-1 py-0.5 font-medium focus:outline-none focus:ring-1 focus:ring-primary"
+      >
+        {catalog.length === 0 && <option value="">Aucun produit</option>}
+        {catalog.map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.nom}
+          </option>
+        ))}
+      </select>
+      {macros.length > 0 && (
+        <span className="hidden text-label-caps uppercase opacity-70 md:inline">
+          {macros.join(' · ')}
+        </span>
+      )}
+      <button
+        type="button"
+        onClick={onRemove}
+        className="flex h-5 w-5 items-center justify-center rounded-full bg-white/50 text-xs font-bold leading-none hover:bg-white"
+        aria-label="Retirer le produit"
+      >
+        ×
+      </button>
+    </div>
+  );
+}
+
+function NeedRow({
+  label,
+  actuel,
+  cible,
+  pct,
+  hint,
+}: {
+  label: string;
+  actuel: string;
+  cible: string;
+  pct: number;
+  hint: string;
+}) {
+  const barPct = Math.min(100, Math.max(0, pct));
+  const barColor = pct >= 90 ? 'bg-emerald-500' : pct >= 60 ? 'bg-orange-500' : 'bg-red-500';
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="text-label-caps uppercase text-on-surface-variant">{label}</span>
+        <span className={`tabular-nums ${pctCouvertureClass(pct)}`}>
+          <span className="font-semibold">{actuel}</span>
+          <span className="text-on-surface-variant"> / {cible}</span>
+          <span className="ml-2 font-semibold">{pct}%</span>
+        </span>
+      </div>
+      <div className="h-1.5 w-full rounded-full bg-outline-variant/40">
+        <div className={`h-full rounded-full ${barColor}`} style={{ width: `${barPct}%` }} />
+      </div>
+      <span className="text-label-caps uppercase text-on-surface-variant/80">{hint}</span>
+    </div>
   );
 }
 

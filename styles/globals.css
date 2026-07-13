@@ -46,3 +46,38 @@ html, body {
   outline: 2px solid #003426;
   outline-offset: 2px;
 }
+
+/*
+ * Impression :
+ * - désactive toutes les hauteurs max / scroll pour que l'ensemble du contenu soit imprimé
+ *   (les tableaux avec overflow-y-auto ne se limitent plus à la portion visible à l'écran).
+ * - retire les fonds décoratifs et scrollbars.
+ */
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+    background-image: none !important;
+    color: #000000;
+  }
+
+  /* Toute zone scrollable devient statique à l'impression pour ne rien tronquer. */
+  .overflow-auto,
+  .overflow-x-auto,
+  .overflow-y-auto,
+  [class*="max-h-"] {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Éviter de couper les lignes de tableau au milieu. */
+  tr,
+  .grid > * {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
