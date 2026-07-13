@@ -12,6 +12,9 @@ import {
   productTypologyLabel,
 } from '@/lib/displayHelpers';
 
+const SEGMENTS_GRID_COLUMNS =
+  'grid-cols-[15rem_5.5rem_5.5rem_5.5rem_6rem_6rem_6rem_6.5rem_6rem_12rem_10rem_7rem]';
+
 export default function SegmentsViewScreen({ course }: { course: Course }) {
   const segments = [...course.segments].sort((a, b) => a.ordre - b.ordre);
   const computed = computeSegments({ ...course, segments });
@@ -56,8 +59,8 @@ export default function SegmentsViewScreen({ course }: { course: Course }) {
         </div>
       </section>
 
-      <div className="rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm">
-        <div className="grid grid-cols-[1.9fr_0.7fr_0.7fr_0.7fr_0.9fr_0.9fr_0.9fr_1.1fr_0.8fr_1.2fr_1fr_1fr] border-b border-outline-variant bg-surface-container-highest text-label-caps uppercase text-on-secondary-fixed-variant">
+      <div className="overflow-x-auto rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm">
+        <div className={`grid min-w-[94rem] ${SEGMENTS_GRID_COLUMNS} border-b border-outline-variant bg-surface-container-highest text-label-caps uppercase text-on-secondary-fixed-variant`}>
           <HeaderCell>Segment</HeaderCell>
           <HeaderCell align="center">Dist (km)</HeaderCell>
           <HeaderCell align="center">D+ (m)</HeaderCell>
@@ -87,7 +90,7 @@ export default function SegmentsViewScreen({ course }: { course: Course }) {
             return (
               <div
                 key={segment.ordre}
-                className="grid grid-cols-[1.9fr_0.7fr_0.7fr_0.7fr_0.9fr_0.9fr_0.9fr_1.1fr_0.8fr_1.2fr_1fr_1fr] border-b border-outline-variant/70 text-body-md hover:bg-surface-container"
+                className={`grid min-w-[94rem] ${SEGMENTS_GRID_COLUMNS} border-b border-outline-variant/70 text-body-md hover:bg-surface-container`}
               >
                 <Cell className="font-semibold text-on-surface">
                   <div className="flex items-center gap-2">
@@ -132,7 +135,7 @@ export default function SegmentsViewScreen({ course }: { course: Course }) {
         </div>
 
         {segments.length > 0 && (
-          <div className="grid grid-cols-[1.9fr_0.7fr_0.7fr_0.7fr_0.9fr_0.9fr_0.9fr_1.1fr_0.8fr_1.2fr_1fr_1fr] border-t-2 border-primary bg-secondary-fixed text-on-secondary-fixed">
+          <div className={`grid min-w-[94rem] ${SEGMENTS_GRID_COLUMNS} border-t-2 border-primary bg-secondary-fixed text-on-secondary-fixed`}>
             <Cell className="font-bold">TOTAL COURSE</Cell>
             <Cell align="center" className="tabular-nums font-semibold">{computed.totalDistanceKm.toFixed(1)}</Cell>
             <Cell align="center" className="tabular-nums font-semibold">{computed.totalDplusM.toLocaleString('fr-FR')}</Cell>
