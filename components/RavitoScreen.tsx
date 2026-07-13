@@ -432,7 +432,7 @@ function NeedRow({
   );
 }
 
-function Th({ children }: { children?: any }) {
+function Th({ children }: { children?: React.ReactNode }) {
   return (
     <th className="whitespace-nowrap px-3 py-3 text-label-caps uppercase text-on-surface-variant">
       {children}

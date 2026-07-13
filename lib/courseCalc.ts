@@ -273,8 +273,9 @@ export function parseHMS(value: string): number {
 /** Formate une allure (min/km-effort) en "m:ss /km-eff". */
 export function formatAllure(minPerKm: number): string {
   if (!isFinite(minPerKm) || minPerKm <= 0) return '–';
-  const m = Math.floor(minPerKm);
-  const s = Math.round((minPerKm - m) * 60);
+  const totalSeconds = Math.round(minPerKm * 60);
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 

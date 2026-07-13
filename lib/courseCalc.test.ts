@@ -1,4 +1,4 @@
-import { computeSegments } from './courseCalc';
+import { computeSegments, formatAllure } from './courseCalc';
 import type { Course } from './types';
 
 function makeCourse(profile: Course['profilAllure']): Course {
@@ -37,5 +37,11 @@ describe('computeSegments - profil allure non lineaire', () => {
 
     expect(nonlinearFirst).toBeLessThan(linearFirst);
     expect(nonlinearLast).toBeGreaterThan(linearLast);
+  });
+});
+
+describe('formatAllure', () => {
+  it('gere correctement les arrondis pour eviter les secondes a 60', () => {
+    expect(formatAllure(5.999)).toBe('6:00');
   });
 });

@@ -191,7 +191,7 @@ function KpiCard({
   );
 }
 
-function HeaderCell({ children, align = 'left' }: { children: any; align?: 'left' | 'center' }) {
+function HeaderCell({ children, align = 'left' }: { children: React.ReactNode; align?: 'left' | 'center' }) {
   return <div className={`px-2 py-2 print:px-1 print:py-1 ${align === 'center' ? 'text-center' : ''}`}>{children}</div>;
 }
 
@@ -200,7 +200,7 @@ function Cell({
   align = 'left',
   className = '',
 }: {
-  children?: any;
+  children?: React.ReactNode;
   align?: 'left' | 'center';
   className?: string;
 }) {
@@ -216,8 +216,9 @@ function formatDurationClock(minutes: number): string {
 
 function formatPace(minPerKm: number): string {
   if (!isFinite(minPerKm) || minPerKm <= 0) return '0:00';
-  const m = Math.floor(minPerKm);
-  const s = Math.round((minPerKm - m) * 60);
+  const totalSeconds = Math.round(minPerKm * 60);
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 

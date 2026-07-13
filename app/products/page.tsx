@@ -23,7 +23,6 @@ const emptyDraft: DraftProduit = {
 export default function ProductsPage() {
   const { user, loading } = useAuth();
   const [products, setProducts] = useState<ProduitGlobal[]>([]);
-  const [productDrafts, setProductDrafts] = useState<Record<string, DraftProduit>>({});
   const [draft, setDraft] = useState<DraftProduit>(emptyDraft);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -37,21 +36,6 @@ export default function ProductsPage() {
     );
     return () => unsubscribe();
   }, [user]);
-
-  useEffect(() => {
-    setProductDrafts((prev) => {
-      const next: Record<string, DraftProduit> = {};
-      for (const product of products) {
-        next[product.id] = prev[product.id] ?? {
-          nom: product.nom,
-          unite: product.unite,
-          glucidesParUniteG: String(product.glucidesParUniteG),
-          volumeLiquideMl: String(product.volumeLiquideMl),
-        };
-      }
-      return next;
-    });
-  }, [products]);
 
   if (loading) {
     return <div className="flex h-screen items-center justify-center">Chargement...</div>;
@@ -87,38 +71,6 @@ export default function ProductsPage() {
     } finally {
       setBusy(false);
     }
-  };
-
-  const setProductDraft = (id: string, patch: Partial<DraftProduit>) => {
-    setProductDrafts((prev) => ({
-      ...prev,
-      [id]: {
-        ...(prev[id] ?? emptyDraft),
-        ...patch,
-      },
-    }));
-  };
-
-  const saveProductDraft = async (product: ProduitGlobal) => {
-    const rowDraft = productDrafts[product.id];
-    if (!rowDraft) return;
-
-    const normalized = {
-      nom: rowDraft.nom,
-      unite: rowDraft.unite,
-      glucidesParUniteG: Number(rowDraft.glucidesParUniteG) || 0,
-      volumeLiquideMl: Number(rowDraft.volumeLiquideMl) || 0,
-    };
-
-    const hasChange =
-      normalized.nom !== product.nom ||
-      normalized.unite !== product.unite ||
-      normalized.glucidesParUniteG !== product.glucidesParUniteG ||
-      normalized.volumeLiquideMl !== product.volumeLiquideMl;
-
-    if (!hasChange) return;
-
-    await patchProduct(product.id, normalized);
   };
 
   const removeProduct = async (id: string) => {
@@ -213,17 +165,15 @@ export default function ProductsPage() {
                   <tr key={product.id}>
                     <td className="px-2 py-2">
                       <input
-                        value={productDrafts[product.id]?.nom ?? product.nom}
-                        onChange={(e) => setProductDraft(product.id, { nom: e.target.value })}
-                        onBlur={() => saveProductDraft(product)}
+                        value={product.nom}
+                        onChange={(e) => patchProduct(product.id, { nom: e.target.value })}
                         className={inputClass + ' min-w-[10rem]'}
                       />
                     </td>
                     <td className="px-2 py-2">
                       <input
-                        value={productDrafts[product.id]?.unite ?? product.unite}
-                        onChange={(e) => setProductDraft(product.id, { unite: e.target.value })}
-                        onBlur={() => saveProductDraft(product)}
+                        value={product.unite}
+                        onChange={(e) => patchProduct(product.id, { unite: e.target.value })}
                         className={inputClass + ' w-24'}
                       />
                     </td>
@@ -231,9 +181,8 @@ export default function ProductsPage() {
                       <input
                         type="number"
                         min="0"
-                        value={productDrafts[product.id]?.glucidesParUniteG ?? String(product.glucidesParUniteG)}
-                        onChange={(e) => setProductDraft(product.id, { glucidesParUniteG: e.target.value })}
-                        onBlur={() => saveProductDraft(product)}
+                        value={product.glucidesParUniteG}
+                        onChange={(e) => patchProduct(product.id, { glucidesParUniteG: Number(e.target.value) || 0 })}
                         className={inputClass + ' w-24 tabular-nums'}
                       />
                     </td>
@@ -241,9 +190,8 @@ export default function ProductsPage() {
                       <input
                         type="number"
                         min="0"
-                        value={productDrafts[product.id]?.volumeLiquideMl ?? String(product.volumeLiquideMl)}
-                        onChange={(e) => setProductDraft(product.id, { volumeLiquideMl: e.target.value })}
-                        onBlur={() => saveProductDraft(product)}
+                        value={product.volumeLiquideMl}
+                        onChange={(e) => patchProduct(product.id, { volumeLiquideMl: Number(e.target.value) || 0 })}
                         className={inputClass + ' w-24 tabular-nums'}
                       />
                     </td>
@@ -270,7 +218,7 @@ export default function ProductsPage() {
 const inputClass =
   'w-full rounded border border-outline-variant bg-surface-container-lowest px-2 py-1 text-body-md focus:border-primary focus:outline-none';
 
-function Th({ children }: { children?: any }) {
+function Th({ children }: { children?: React.ReactNode }) {
   return (
     <th className="whitespace-nowrap px-3 py-3 text-label-caps uppercase text-on-surface-variant">
       {children}
