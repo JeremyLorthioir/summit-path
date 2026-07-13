@@ -79,6 +79,29 @@ export function productChipClass(unite: string | undefined): string {
   }
 }
 
+/** Libelle de typologie produit pour un affichage agrege (ex: 3x gels, 4x boissons). */
+export function productTypologyLabel(unite: string | undefined): string {
+  const key = (unite ?? '').trim().toLowerCase();
+  switch (true) {
+    case /gel|gomm/.test(key):
+      return 'gels';
+    case /compot|puree|purée/.test(key):
+      return 'compotes';
+    case /flasq|bidon|boisson|eau|water|liquide/.test(key):
+      return 'boissons';
+    case /barre|bar/.test(key):
+      return 'barres';
+    case /sachet|poudre|mix|shake/.test(key):
+      return 'sachets';
+    case /sel|electro|comprim|cap|pastil/.test(key):
+      return 'electrolytes';
+    case /solide|sandwich|banane|fruit|patate/.test(key):
+      return 'solides';
+    default:
+      return 'autres';
+  }
+}
+
 /**
  * Besoins théoriques d'un segment.
  * - Glucides : dérivés de l'objectif course (g/h) × durée segment.

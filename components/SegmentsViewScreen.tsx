@@ -9,6 +9,7 @@ import {
   getMargeLevel,
   margeBadgeClass,
   productChipClass,
+  productTypologyLabel,
 } from '@/lib/displayHelpers';
 
 export default function SegmentsViewScreen({ course }: { course: Course }) {
@@ -226,24 +227,38 @@ function SegmentProductsPills({
   if (filtered.length === 0) {
     return <span className="text-on-surface-variant">Aucun produit</span>;
   }
-  const visible = filtered.slice(0, 2);
-  const hiddenCount = Math.max(0, filtered.length - visible.length);
+
+  const byTypology = new Map<string, { qty: number; unite?: string }>();
+  for (const item of filtered) {
+    const product = catalogMap.get(item.produitId);
+    const unite = product?.unite;
+    const typology = productTypologyLabel(unite);
+    const existing = byTypology.get(typology);
+    byTypology.set(typology, {
+      qty: (existing?.qty ?? 0) + item.quantite,
+      unite: existing?.unite ?? unite,
+    });
+  }
+
+  const groups = Array.from(byTypology.entries())
+    .map(([typology, data]) => ({ typology, ...data }))
+    .sort((a, b) => b.qty - a.qty);
+
+  const visible = groups.slice(0, 3);
+  const hiddenCount = Math.max(0, groups.length - visible.length);
 
   return (
     <div className="flex items-center gap-1 overflow-hidden whitespace-nowrap">
-      {visible.map((item, index) => {
-        const product = catalogMap.get(item.produitId);
-        const label = product?.nom ?? `Produit ${item.produitId}`;
+      {visible.map((group, index) => {
         return (
           <span
-            key={`${item.produitId}-${index}`}
+            key={`${group.typology}-${index}`}
             className={`inline-flex max-w-[8.5rem] items-center gap-1 overflow-hidden text-ellipsis rounded-full border px-1.5 py-0.5 text-label-caps ${productChipClass(
-              product?.unite
+              group.unite
             )}`}
-            title={`${item.quantite} x ${label}`}
+            title={`${group.qty} x ${group.typology}`}
           >
-            <span className="font-semibold tabular-nums leading-none">{item.quantite}x</span>
-            <span className="truncate">{label}</span>
+            <span className="truncate font-semibold tabular-nums leading-none">{group.qty}x {group.typology}</span>
           </span>
         );
       })}
