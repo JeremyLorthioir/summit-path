@@ -14,6 +14,8 @@ import {
 
 const SEGMENTS_GRID_COLUMNS =
   'grid-cols-[1.55fr_0.58fr_0.58fr_0.58fr_0.68fr_0.68fr_0.74fr_0.82fr_0.76fr_1.25fr_0.95fr_0.78fr]';
+const SEGMENTS_GRID_COLUMNS_PRINT =
+  'print:grid-cols-[1.35fr_0.5fr_0.5fr_0.5fr_0.58fr_0.58fr_0.62fr_0.68fr_0.62fr_1fr_0.8fr_0.62fr]';
 
 export default function SegmentsViewScreen({ course }: { course: Course }) {
   const segments = [...course.segments].sort((a, b) => a.ordre - b.ordre);
@@ -59,8 +61,8 @@ export default function SegmentsViewScreen({ course }: { course: Course }) {
         </div>
       </section>
 
-      <div className="overflow-x-auto rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm">
-        <div className={`grid min-w-[78rem] ${SEGMENTS_GRID_COLUMNS} border-b border-outline-variant bg-surface-container-highest text-label-caps uppercase text-on-secondary-fixed-variant`}>
+      <div className="overflow-x-auto rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm print:overflow-visible">
+        <div className={`grid min-w-[78rem] print:min-w-0 ${SEGMENTS_GRID_COLUMNS} ${SEGMENTS_GRID_COLUMNS_PRINT} border-b border-outline-variant bg-surface-container-highest text-label-caps uppercase text-on-secondary-fixed-variant print:text-[10px]`}>
           <HeaderCell>Segment</HeaderCell>
           <HeaderCell align="center">Dist (km)</HeaderCell>
           <HeaderCell align="center">D+ (m)</HeaderCell>
@@ -90,7 +92,7 @@ export default function SegmentsViewScreen({ course }: { course: Course }) {
             return (
               <div
                 key={segment.ordre}
-                className={`grid min-w-[78rem] ${SEGMENTS_GRID_COLUMNS} border-b border-outline-variant/70 text-[13px] hover:bg-surface-container`}
+                className={`grid min-w-[78rem] print:min-w-0 ${SEGMENTS_GRID_COLUMNS} ${SEGMENTS_GRID_COLUMNS_PRINT} border-b border-outline-variant/70 text-[13px] hover:bg-surface-container print:text-[11px]`}
               >
                 <Cell className="font-semibold text-on-surface">
                   <div className="flex items-center gap-2">
@@ -135,7 +137,7 @@ export default function SegmentsViewScreen({ course }: { course: Course }) {
         </div>
 
         {segments.length > 0 && (
-          <div className={`grid min-w-[78rem] ${SEGMENTS_GRID_COLUMNS} border-t-2 border-primary bg-secondary-fixed text-[13px] text-on-secondary-fixed`}>
+          <div className={`grid min-w-[78rem] print:min-w-0 ${SEGMENTS_GRID_COLUMNS} ${SEGMENTS_GRID_COLUMNS_PRINT} border-t-2 border-primary bg-secondary-fixed text-[13px] text-on-secondary-fixed print:text-[11px]`}>
             <Cell className="font-bold">TOTAL COURSE</Cell>
             <Cell align="center" className="tabular-nums font-semibold">{computed.totalDistanceKm.toFixed(1)}</Cell>
             <Cell align="center" className="tabular-nums font-semibold">{computed.totalDplusM.toLocaleString('fr-FR')}</Cell>
@@ -190,7 +192,7 @@ function KpiCard({
 }
 
 function HeaderCell({ children, align = 'left' }: { children: any; align?: 'left' | 'center' }) {
-  return <div className={`px-2 py-2 ${align === 'center' ? 'text-center' : ''}`}>{children}</div>;
+  return <div className={`px-2 py-2 print:px-1 print:py-1 ${align === 'center' ? 'text-center' : ''}`}>{children}</div>;
 }
 
 function Cell({
@@ -202,7 +204,7 @@ function Cell({
   align?: 'left' | 'center';
   className?: string;
 }) {
-  return <div className={`min-w-0 px-2 py-2 ${align === 'center' ? 'text-center' : ''} ${className}`}>{children}</div>;
+  return <div className={`min-w-0 px-2 py-2 print:px-1 print:py-1 ${align === 'center' ? 'text-center' : ''} ${className}`}>{children}</div>;
 }
 
 function formatDurationClock(minutes: number): string {
@@ -248,12 +250,12 @@ function SegmentProductsPills({
     .sort((a, b) => b.qty - a.qty);
 
   return (
-    <div className="flex max-h-[4.2rem] flex-wrap items-start gap-1 overflow-y-auto pr-1">
+    <div className="flex max-h-[4.2rem] flex-wrap items-start gap-1 overflow-y-auto pr-1 print:max-h-none print:overflow-visible print:gap-0.5 print:pr-0">
       {groups.map((group, index) => {
         return (
           <span
             key={`${group.typology}-${index}`}
-            className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-label-caps whitespace-normal ${productChipClass(
+            className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-label-caps whitespace-normal print:px-1 print:py-0 print:text-[10px] ${productChipClass(
               group.unite
             )}`}
             title={`${group.qty} x ${group.typology}`}
