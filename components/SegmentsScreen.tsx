@@ -11,7 +11,6 @@ import {
 } from '@/lib/segmentImport';
 import { segmentDisplayLabel } from '@/lib/segmentLabels';
 import { getMargeLevel, margeTextClass } from '@/lib/displayHelpers';
-import { parseGpx, type GpxImportResult, type GpxTrackPoint } from '@/lib/gpx';
 
 const emptySegment = (ordre: number): Segment => ({
   ordre,
@@ -42,8 +41,6 @@ export default function SegmentsScreen({
   const [importError, setImportError] = useState<string | null>(null);
   const [importInfo, setImportInfo] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const gpxInputRef = useRef<HTMLInputElement | null>(null);
-  const [gpxPreview, setGpxPreview] = useState<GpxImportResult | null>(null);
 
   // Course virtuelle pour recalculer en direct selon l'édition courante.
   const computed = computeSegments({ ...course, segments });
@@ -76,11 +73,6 @@ export default function SegmentsScreen({
     fileInputRef.current?.click();
   };
 
-  const openGpxPicker = () => {
-    setImportError(null);
-    gpxInputRef.current?.click();
-  };
-
   const handleCsvPick = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = '';
@@ -99,46 +91,6 @@ export default function SegmentsScreen({
     }
   };
 
-  const handleGpxPick = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    event.target.value = '';
-    if (!file) return;
-
-    try {
-      const content = await file.text();
-      const parsed = parseGpx(content);
-      setGpxPreview(parsed);
-      setImportError(null);
-      setImportInfo(
-        `GPX importe: ${parsed.name} (${parsed.distanceKm.toFixed(1)} km, D+ ${parsed.dplusM} m, D- ${parsed.dmoinsM} m).`
-      );
-    } catch (error) {
-      setGpxPreview(null);
-      setImportInfo(null);
-      setImportError((error as Error).message);
-    }
-  };
-
-  const applyGpxAsSingleSegment = () => {
-    if (!gpxPreview) return;
-    const nextModes: SegmentInputModes = { distance: 'segment', denivele: 'segment' };
-    setModes(nextModes);
-    setSegments(
-      normalizeSegments(
-        [
-          {
-            ...emptySegment(1),
-            nom: gpxPreview.name,
-            distanceKm: Number(gpxPreview.distanceKm.toFixed(2)),
-            dplusM: gpxPreview.dplusM,
-            dmoinsM: gpxPreview.dmoinsM,
-          },
-        ],
-        nextModes
-      )
-    );
-    setImportInfo('Le GPX a ete applique au tableau segments (1 segment).');
-  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -160,25 +112,12 @@ export default function SegmentsScreen({
           >
             Import CSV
           </button>
-          <button
-            onClick={openGpxPicker}
-            className="rounded-lg border-2 border-outline-variant px-4 py-2 text-label-caps uppercase text-on-surface hover:border-primary"
-          >
-            Import GPX
-          </button>
           <input
             ref={fileInputRef}
             type="file"
             accept=".csv,text/csv"
             className="hidden"
             onChange={handleCsvPick}
-          />
-          <input
-            ref={gpxInputRef}
-            type="file"
-            accept=".gpx,application/gpx+xml,application/xml,text/xml"
-            className="hidden"
-            onChange={handleGpxPick}
           />
           <button
             onClick={addRow}
@@ -206,31 +145,6 @@ export default function SegmentsScreen({
         >
           {importError ?? importInfo}
         </div>
-      )}
-
-      {gpxPreview && (
-        <section className="space-y-stack-md rounded-xl border border-outline-variant bg-surface-container-lowest p-stack-lg">
-          <div className="flex flex-wrap items-center justify-between gap-stack-sm">
-            <div>
-              <h3 className="text-body-lg font-semibold text-on-surface">Apercu GPX</h3>
-              <p className="text-body-md text-on-surface-variant">
-                {gpxPreview.name} · {gpxPreview.distanceKm.toFixed(1)} km · D+ {gpxPreview.dplusM} m · D- {gpxPreview.dmoinsM} m
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={applyGpxAsSingleSegment}
-              className="rounded-lg bg-primary px-4 py-2 text-label-caps uppercase text-on-primary hover:opacity-90"
-            >
-              Appliquer au tableau
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 gap-stack-md lg:grid-cols-2">
-            <SvgTraceMap points={gpxPreview.points} />
-            <SvgElevationProfile points={gpxPreview.points} />
-          </div>
-        </section>
       )}
 
       <div className="grid gap-stack-md rounded-xl border border-outline-variant bg-surface-container-lowest p-4 md:grid-cols-2">
@@ -503,71 +417,4 @@ function Calc({ children }: { children?: React.ReactNode }) {
 function formatSignedMinutes(minutes: number): string {
   const absValue = formatMinutes(Math.abs(minutes));
   return `${minutes >= 0 ? '+' : '-'}${absValue}`;
-}
-
-function SvgTraceMap({ points }: { points: GpxTrackPoint[] }) {
-  if (points.length < 2) return null;
-  const width = 900;
-  const height = 320;
-  const padding = 16;
-  const lats = points.map((p) => p.lat);
-  const lons = points.map((p) => p.lon);
-  const minLat = Math.min(...lats);
-  const maxLat = Math.max(...lats);
-  const minLon = Math.min(...lons);
-  const maxLon = Math.max(...lons);
-  const spanLat = Math.max(0.000001, maxLat - minLat);
-  const spanLon = Math.max(0.000001, maxLon - minLon);
-
-  const path = points
-    .map((point, index) => {
-      const x = padding + ((point.lon - minLon) / spanLon) * (width - 2 * padding);
-      const y = padding + (1 - (point.lat - minLat) / spanLat) * (height - 2 * padding);
-      return `${index === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`;
-    })
-    .join(' ');
-
-  return (
-    <div className="rounded-lg border border-outline-variant bg-surface p-3">
-      <p className="mb-2 text-label-caps uppercase text-on-surface-variant">Trace GPX</p>
-      <svg viewBox={`0 0 ${width} ${height}`} className="h-56 w-full rounded bg-surface-container-low">
-        <path d={path} fill="none" stroke="currentColor" strokeWidth="2" className="text-primary" />
-      </svg>
-    </div>
-  );
-}
-
-function SvgElevationProfile({ points }: { points: GpxTrackPoint[] }) {
-  if (points.length < 2) return null;
-  const width = 900;
-  const height = 320;
-  const padding = 16;
-  const minEle = Math.min(...points.map((p) => p.ele));
-  const maxEle = Math.max(...points.map((p) => p.ele));
-  const maxDistance = Math.max(0.001, points[points.length - 1].distanceKm);
-  const spanEle = Math.max(1, maxEle - minEle);
-
-  const profile = points
-    .map((point, index) => {
-      const x = padding + (point.distanceKm / maxDistance) * (width - 2 * padding);
-      const y = padding + (1 - (point.ele - minEle) / spanEle) * (height - 2 * padding);
-      return `${index === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`;
-    })
-    .join(' ');
-
-  const area = `${profile} L${(width - padding).toFixed(2)} ${(height - padding).toFixed(2)} L${padding} ${(height - padding).toFixed(2)} Z`;
-
-  return (
-    <div className="rounded-lg border border-outline-variant bg-surface p-3">
-      <p className="mb-2 text-label-caps uppercase text-on-surface-variant">Courbe de denivele</p>
-      <svg viewBox={`0 0 ${width} ${height}`} className="h-56 w-full rounded bg-surface-container-low">
-        <path d={area} fill="currentColor" className="text-primary/20" />
-        <path d={profile} fill="none" stroke="currentColor" strokeWidth="2" className="text-primary" />
-      </svg>
-      <div className="mt-2 flex justify-between text-label-caps uppercase text-on-surface-variant">
-        <span>0 km</span>
-        <span>{maxDistance.toFixed(1)} km</span>
-      </div>
-    </div>
-  );
 }
