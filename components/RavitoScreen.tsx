@@ -321,22 +321,22 @@ function ProductChip({
 
   return (
     <div
-      className={`inline-flex items-center gap-2 rounded-full border px-2 py-1 text-body-md shadow-sm ${color}`}
+      className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-body-md shadow-sm ${color}`}
     >
       <div className="flex items-center gap-0.5">
         <button
           type="button"
           onClick={() => onChangeQuantite(Math.max(0, (item.quantite || 0) - 1))}
-          className="flex h-6 w-6 items-center justify-center rounded-full bg-white/60 text-base font-bold leading-none hover:bg-white"
+          className="flex h-5 w-5 items-center justify-center rounded-full bg-white/60 text-sm font-bold leading-none hover:bg-white"
           aria-label="Diminuer la quantité"
         >
           −
         </button>
-        <span className="min-w-[1.5rem] text-center font-semibold tabular-nums">{item.quantite}</span>
+        <span className="min-w-[1.2rem] text-center text-sm font-semibold tabular-nums">{item.quantite}</span>
         <button
           type="button"
           onClick={() => onChangeQuantite((item.quantite || 0) + 1)}
-          className="flex h-6 w-6 items-center justify-center rounded-full bg-white/60 text-base font-bold leading-none hover:bg-white"
+          className="flex h-5 w-5 items-center justify-center rounded-full bg-white/60 text-sm font-bold leading-none hover:bg-white"
           aria-label="Augmenter la quantité"
         >
           +
@@ -345,7 +345,7 @@ function ProductChip({
       <select
         value={item.produitId}
         onChange={(e) => onChangeProduct(e.target.value)}
-        className="max-w-[10rem] truncate rounded bg-transparent px-1 py-0.5 font-medium focus:outline-none focus:ring-1 focus:ring-primary"
+        className="max-w-[8.5rem] truncate rounded bg-transparent px-0.5 py-0 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary"
       >
         {catalog.length === 0 && <option value="">Aucun produit</option>}
         {catalog.map((option) => (
@@ -355,14 +355,14 @@ function ProductChip({
         ))}
       </select>
       {macros.length > 0 && (
-        <span className="hidden text-label-caps uppercase opacity-70 md:inline">
+        <span className="hidden text-label-caps uppercase opacity-70 lg:inline">
           {macros.join(' · ')}
         </span>
       )}
       <button
         type="button"
         onClick={onRemove}
-        className="flex h-5 w-5 items-center justify-center rounded-full bg-white/50 text-xs font-bold leading-none hover:bg-white"
+        className="flex h-4 w-4 items-center justify-center rounded-full bg-white/50 text-[10px] font-bold leading-none hover:bg-white"
         aria-label="Retirer le produit"
       >
         ×

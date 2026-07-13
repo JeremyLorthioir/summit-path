@@ -226,23 +226,32 @@ function SegmentProductsPills({
   if (filtered.length === 0) {
     return <span className="text-on-surface-variant">Aucun produit</span>;
   }
+  const visible = filtered.slice(0, 2);
+  const hiddenCount = Math.max(0, filtered.length - visible.length);
+
   return (
-    <div className="flex flex-wrap gap-1">
-      {filtered.map((item, index) => {
+    <div className="flex items-center gap-1 overflow-hidden whitespace-nowrap">
+      {visible.map((item, index) => {
         const product = catalogMap.get(item.produitId);
         const label = product?.nom ?? `Produit ${item.produitId}`;
         return (
           <span
             key={`${item.produitId}-${index}`}
-            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-label-caps ${productChipClass(
+            className={`inline-flex max-w-[8.5rem] items-center gap-1 overflow-hidden text-ellipsis rounded-full border px-1.5 py-0.5 text-label-caps ${productChipClass(
               product?.unite
             )}`}
+            title={`${item.quantite} x ${label}`}
           >
-            <span className="font-semibold tabular-nums">{item.quantite}×</span>
-            <span>{label}</span>
+            <span className="font-semibold tabular-nums leading-none">{item.quantite}x</span>
+            <span className="truncate">{label}</span>
           </span>
         );
       })}
+      {hiddenCount > 0 && (
+        <span className="inline-flex items-center rounded-full border border-outline-variant bg-surface-container-low px-1.5 py-0.5 text-label-caps text-on-surface-variant">
+          +{hiddenCount}
+        </span>
+      )}
     </div>
   );
 }
