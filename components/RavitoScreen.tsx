@@ -227,9 +227,15 @@ export default function RavitoScreen({
                     Aucun produit sélectionné pour ce segment.
                   </p>
                 ) : (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="space-y-2">
+                    <div className="hidden md:grid md:grid-cols-[minmax(16rem,1fr)_10rem_11rem_auto] md:items-center md:gap-3 md:px-3">
+                      <span className="text-label-caps uppercase text-on-surface-variant">Produit</span>
+                      <span className="text-label-caps uppercase text-on-surface-variant">Quantité</span>
+                      <span className="text-label-caps uppercase text-on-surface-variant">Apport</span>
+                      <span className="text-label-caps uppercase text-on-surface-variant">Action</span>
+                    </div>
                     {items.map((item, itemIndex) => (
-                      <ProductChip
+                      <ProductRow
                         key={`${segment.ordre}-${itemIndex}`}
                         item={item}
                         catalog={catalog}
@@ -299,7 +305,7 @@ export default function RavitoScreen({
   );
 }
 
-function ProductChip({
+function ProductRow({
   item,
   product,
   catalog,
@@ -314,58 +320,80 @@ function ProductChip({
   onChangeQuantite: (quantite: number) => void;
   onRemove: () => void;
 }) {
-  const color = productChipClass(product?.unite, product?.nom);
+  const color = productChipClass(product?.unite);
+  const unitLabel = product?.unite?.trim() || 'autre';
+  const quantity = Math.max(0, item.quantite || 0);
+  const totalGlucides = Math.round((product?.glucidesParUniteG ?? 0) * quantity);
+  const totalLiquide = Math.round((product?.volumeLiquideMl ?? 0) * quantity);
   const macros: string[] = [];
   if (product?.glucidesParUniteG) macros.push(`${product.glucidesParUniteG}g gluc.`);
   if (product?.volumeLiquideMl) macros.push(`${product.volumeLiquideMl}ml`);
 
   return (
-    <div
-      className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-body-md shadow-sm ${color}`}
-    >
-      <div className="flex items-center gap-0.5">
+    <div className="grid grid-cols-1 gap-3 rounded-lg border border-outline-variant bg-surface p-3 md:grid-cols-[minmax(16rem,1fr)_10rem_11rem_auto] md:items-center">
+      <div className="min-w-0">
+        <div className="mb-1 flex flex-wrap items-center gap-2">
+          <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-label-caps uppercase ${color}`}>
+            {unitLabel}
+          </span>
+          {macros.length > 0 && (
+            <span className="text-label-caps uppercase text-on-surface-variant">{macros.join(' · ')}</span>
+          )}
+        </div>
+        <select
+          value={item.produitId}
+          onChange={(e) => onChangeProduct(e.target.value)}
+          className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-body-md text-on-surface focus:border-primary focus:outline-none"
+        >
+          {catalog.length === 0 && <option value="">Aucun produit</option>}
+          {catalog.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.nom}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex items-center gap-1 md:justify-self-start">
         <button
           type="button"
-          onClick={() => onChangeQuantite(Math.max(0, (item.quantite || 0) - 1))}
-          className="flex h-5 w-5 items-center justify-center rounded-full bg-white/60 text-sm font-bold leading-none hover:bg-white"
+          onClick={() => onChangeQuantite(Math.max(0, quantity - 1))}
+          className="flex h-8 w-8 items-center justify-center rounded-md border border-outline-variant bg-surface-container-low text-base font-bold leading-none text-on-surface hover:border-primary"
           aria-label="Diminuer la quantité"
         >
           −
         </button>
-        <span className="min-w-[1.2rem] text-center text-sm font-semibold tabular-nums">{item.quantite}</span>
+        <input
+          type="number"
+          min="0"
+          step="1"
+          value={quantity}
+          onChange={(e) => onChangeQuantite(Number(e.target.value) || 0)}
+          className="w-16 rounded-md border border-outline-variant bg-surface-container-lowest px-2 py-1 text-center text-body-md font-semibold tabular-nums text-on-surface focus:border-primary focus:outline-none"
+          aria-label="Quantité"
+        />
         <button
           type="button"
-          onClick={() => onChangeQuantite((item.quantite || 0) + 1)}
-          className="flex h-5 w-5 items-center justify-center rounded-full bg-white/60 text-sm font-bold leading-none hover:bg-white"
+          onClick={() => onChangeQuantite(quantity + 1)}
+          className="flex h-8 w-8 items-center justify-center rounded-md border border-outline-variant bg-surface-container-low text-base font-bold leading-none text-on-surface hover:border-primary"
           aria-label="Augmenter la quantité"
         >
           +
         </button>
       </div>
-      <select
-        value={item.produitId}
-        onChange={(e) => onChangeProduct(e.target.value)}
-        className="max-w-[8.5rem] truncate rounded bg-transparent px-0.5 py-0 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary"
-      >
-        {catalog.length === 0 && <option value="">Aucun produit</option>}
-        {catalog.map((option) => (
-          <option key={option.id} value={option.id}>
-            {option.nom}
-          </option>
-        ))}
-      </select>
-      {macros.length > 0 && (
-        <span className="hidden text-label-caps uppercase opacity-70 lg:inline">
-          {macros.join(' · ')}
-        </span>
-      )}
+
+      <div className="text-body-md tabular-nums text-on-surface md:justify-self-start">
+        <span className="font-semibold">{totalGlucides} g</span>
+        <span className="text-on-surface-variant"> · {totalLiquide} ml</span>
+      </div>
+
       <button
         type="button"
         onClick={onRemove}
-        className="flex h-4 w-4 items-center justify-center rounded-full bg-white/50 text-[10px] font-bold leading-none hover:bg-white"
+        className="justify-self-start rounded-lg border border-outline-variant px-3 py-2 text-label-caps uppercase text-on-surface hover:border-primary"
         aria-label="Retirer le produit"
       >
-        ×
+        Retirer
       </button>
     </div>
   );
