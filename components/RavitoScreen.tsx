@@ -335,25 +335,11 @@ export default function RavitoScreen({
       </section>
 
       <section className="hidden print:block print:space-y-4">
-        <h2 className="text-headline-md text-on-surface">Plan de ravitaillement - {course.nom || 'Course'}</h2>
-
-        <div className="grid grid-cols-3 gap-3 rounded-lg border border-outline-variant bg-surface-container-low p-3 text-body-md">
-          <div>
-            <span className="block text-label-caps uppercase text-on-surface-variant">Glucides plan total</span>
-            <span className="font-semibold tabular-nums text-on-surface">{Math.round(summary.totalGlucidesG)} g</span>
-          </div>
-          <div>
-            <span className="block text-label-caps uppercase text-on-surface-variant">Liquide plan total</span>
-            <span className="font-semibold tabular-nums text-on-surface">{Math.round(summary.totalLiquideMl)} ml</span>
-          </div>
-          <div>
-            <span className="block text-label-caps uppercase text-on-surface-variant">Objectif course</span>
-            <span className="font-semibold tabular-nums text-on-surface">{Math.round(objectifCourseG)} g</span>
-          </div>
-        </div>
-
         {printRows.map((printRow, segmentIndex) => (
-          <article key={`print-segment-${printRow.segment.ordre}`} className="rounded-lg border border-outline-variant p-3">
+          <article
+            key={`print-segment-${printRow.segment.ordre}`}
+            className="rounded-lg border border-outline-variant p-3 print:[break-inside:avoid] print:[page-break-inside:avoid]"
+          >
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-body-lg font-semibold text-on-surface">
                 {segmentDisplayLabel(segments, segmentIndex)}
