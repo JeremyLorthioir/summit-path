@@ -5,6 +5,7 @@ export interface Course {
   date: string;                  // "2026-09-12"
   heureDepart: string;           // "06:00"
   allureCible: number;           // min/km-effort
+  profilAllure?: 'lineaire' | 'non_lineaire';
   objectifGlucidesParHeure: number;
   statut: 'brouillon' | 'prete' | 'terminee' | 'archivee';
   notes?: string;

@@ -21,6 +21,7 @@ export default function NewCoursePage() {
       date: data.date ?? '',
       heureDepart: data.heureDepart ?? '06:00',
       allureCible: data.allureCible ?? 0,
+      profilAllure: data.profilAllure ?? 'non_lineaire',
       objectifGlucidesParHeure: data.objectifGlucidesParHeure ?? 0,
       statut: data.statut ?? 'brouillon',
       notes: data.notes ?? '',

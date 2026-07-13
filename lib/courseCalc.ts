@@ -35,13 +35,64 @@ export interface SegmentsComputed {
   heureArrivee: string;
 }
 
+function buildNormalizedPaceMultipliers(
+  segments: Segment[],
+  kmEfforts: number[],
+  profile: Course['profilAllure']
+): number[] {
+  if (profile !== 'non_lineaire') {
+    return kmEfforts.map(() => 1);
+  }
+
+  const totalKmEffort = kmEfforts.reduce((acc, value) => acc + value, 0);
+  if (totalKmEffort <= 0) {
+    return kmEfforts.map(() => 1);
+  }
+
+  // Paramètres du profil: amplitude (A) et raideur (k).
+  const amplitude = 0.12;
+  const steepness = 4;
+
+  let cumulative = 0;
+  const raw = kmEfforts.map((kmEff) => {
+    const midpointProgress = (cumulative + kmEff / 2) / totalKmEffort;
+    cumulative += kmEff;
+    return 1 + amplitude * Math.tanh(steepness * (midpointProgress - 0.5));
+  });
+
+  // Normalisation pondérée par km-effort et facteur nuit pour conserver le temps total.
+  const weights = segments.map((segment, index) => kmEfforts[index] * (segment.segmentDeNuit ? 1.08 : 1));
+  const weightedRawSum = raw.reduce((acc, factor, index) => acc + factor * weights[index], 0);
+  const totalWeight = weights.reduce((acc, weight) => acc + weight, 0);
+
+  if (totalWeight <= 0 || weightedRawSum <= 0) {
+    return kmEfforts.map(() => 1);
+  }
+
+  const normalization = weightedRawSum / totalWeight;
+  return raw.map((value) => value / normalization);
+}
+
 /** Calcule l'ensemble des lignes dérivées des segments d'une course. */
 export function computeSegments(course: Course): SegmentsComputed {
   const segments = [...course.segments].sort((a, b) => a.ordre - b.ordre);
+  const kmEfforts = segments.map((segment) =>
+    kmEffort(segment.distanceKm, segment.dplusM, segment.dmoinsM)
+  );
+  const paceMultipliers = buildNormalizedPaceMultipliers(
+    segments,
+    kmEfforts,
+    course.profilAllure ?? 'non_lineaire'
+  );
+
   let cumul = 0;
-  const rows: SegmentRow[] = segments.map((segment) => {
-    const kmEff = kmEffort(segment.distanceKm, segment.dplusM, segment.dmoinsM);
-    const etape = tempsEtapeMin(kmEff, course.allureCible, segment.segmentDeNuit);
+  const rows: SegmentRow[] = segments.map((segment, index) => {
+    const kmEff = kmEfforts[index];
+    const etape = tempsEtapeMin(
+      kmEff,
+      course.allureCible * paceMultipliers[index],
+      segment.segmentDeNuit
+    );
     cumul += etape;
     const heure = heurePassage(course.heureDepart, cumul);
     const marge = segment.barriereHoraire

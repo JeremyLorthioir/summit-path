@@ -11,11 +11,17 @@ const STATUTS: { value: Course['statut']; label: string }[] = [
   { value: 'archivee', label: 'Archivée' },
 ];
 
+const PROFILS_ALLURE: { value: NonNullable<Course['profilAllure']>; label: string }[] = [
+  { value: 'lineaire', label: 'Linéaire (constante)' },
+  { value: 'non_lineaire', label: 'Non linéaire (départ plus rapide, fin plus lente)' },
+];
+
 interface FormState {
   nom: string;
   date: string;
   heureDepart: string;
   allureCible: string;
+  profilAllure: NonNullable<Course['profilAllure']>;
   objectifGlucidesParHeure: string;
   statut: Course['statut'];
   notes: string;
@@ -41,6 +47,7 @@ export default function CourseForm({
     date: initial?.date ?? '',
     heureDepart: initial?.heureDepart ?? '06:00',
     allureCible: initial?.allureCible != null ? String(initial.allureCible) : '8',
+    profilAllure: initial?.profilAllure ?? 'non_lineaire',
     objectifGlucidesParHeure:
       initial?.objectifGlucidesParHeure != null ? String(initial.objectifGlucidesParHeure) : '90',
     statut: initial?.statut ?? 'brouillon',
@@ -68,6 +75,7 @@ export default function CourseForm({
         date: form.date,
         heureDepart: form.heureDepart,
         allureCible: Number(form.allureCible) || 0,
+        profilAllure: form.profilAllure,
         objectifGlucidesParHeure: Number(form.objectifGlucidesParHeure) || 0,
         statut: form.statut,
         notes: form.notes.trim(),
@@ -127,6 +135,22 @@ export default function CourseForm({
             className={inputClass}
           />
         </Field>
+        <Field label="Calcul du rythme">
+          <select
+            value={form.profilAllure}
+            onChange={(e) => update('profilAllure', e.target.value as NonNullable<Course['profilAllure']>)}
+            className={inputClass}
+          >
+            {PROFILS_ALLURE.map((profil) => (
+              <option key={profil.value} value={profil.value}>
+                {profil.label}
+              </option>
+            ))}
+          </select>
+        </Field>
+      </div>
+
+      <div className="grid grid-cols-1 gap-stack-lg md:grid-cols-2">
         <Field label="Objectif glucides (g/h)">
           <input
             type="number"
