@@ -57,14 +57,18 @@ export function margeLabel(level: MargeLevel): string {
  * Résout une couleur de pastille produit en fonction de son unité (gel, compote, flasque, etc.).
  * Renvoie un jeu de classes Tailwind (fond + texte + bordure) prêt à consommer.
  */
-export function productChipClass(unite: string | undefined): string {
-  const key = (unite ?? '').trim().toLowerCase();
+export function productChipClass(unite: string | undefined, productName: string | undefined = ''): string {
+  const key = `${unite ?? ''} ${productName ?? ''}`.trim().toLowerCase();
   switch (true) {
     case /gel|gomm/.test(key):
       return 'bg-sky-100 text-sky-800 border-sky-300';
     case /compot|puree|purée/.test(key):
       return 'bg-orange-100 text-orange-800 border-orange-300';
-    case /flasq|bidon|boisson|eau|water|liquide/.test(key):
+    case /\beau\b|water/.test(key):
+      return 'bg-cyan-50 text-cyan-700 border-cyan-300';
+    case /iso|isoton/.test(key):
+      return 'bg-teal-100 text-teal-800 border-teal-300';
+    case /flasq|bidon|boisson|liquide/.test(key):
       return 'bg-cyan-100 text-cyan-800 border-cyan-300';
     case /barre|bar/.test(key):
       return 'bg-amber-100 text-amber-900 border-amber-300';
@@ -80,14 +84,18 @@ export function productChipClass(unite: string | undefined): string {
 }
 
 /** Libelle de typologie produit pour un affichage agrege (ex: 3x gels, 4x boissons). */
-export function productTypologyLabel(unite: string | undefined): string {
-  const key = (unite ?? '').trim().toLowerCase();
+export function productTypologyLabel(unite: string | undefined, productName: string | undefined = ''): string {
+  const key = `${unite ?? ''} ${productName ?? ''}`.trim().toLowerCase();
   switch (true) {
     case /gel|gomm/.test(key):
       return 'gels';
     case /compot|puree|purée/.test(key):
       return 'compotes';
-    case /flasq|bidon|boisson|eau|water|liquide/.test(key):
+    case /\beau\b|water/.test(key):
+      return 'eau';
+    case /iso|isoton/.test(key):
+      return 'boissons iso';
+    case /flasq|bidon|boisson|liquide/.test(key):
       return 'boissons';
     case /barre|bar/.test(key):
       return 'barres';

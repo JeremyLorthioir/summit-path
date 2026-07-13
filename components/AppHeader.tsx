@@ -27,7 +27,7 @@ export default function AppHeader({
   };
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between border-b border-outline-variant bg-surface px-gutter py-3 md:px-8">
+    <header className="sticky top-0 z-40 flex items-center justify-between border-b border-outline-variant bg-surface px-gutter py-3 md:px-8 print:hidden">
       <div className="flex items-center gap-stack-md">
         {backHref && (
           <Link

@@ -314,7 +314,7 @@ function ProductChip({
   onChangeQuantite: (quantite: number) => void;
   onRemove: () => void;
 }) {
-  const color = productChipClass(product?.unite);
+  const color = productChipClass(product?.unite, product?.nom);
   const macros: string[] = [];
   if (product?.glucidesParUniteG) macros.push(`${product.glucidesParUniteG}g gluc.`);
   if (product?.volumeLiquideMl) macros.push(`${product.volumeLiquideMl}ml`);

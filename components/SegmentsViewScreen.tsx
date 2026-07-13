@@ -232,7 +232,8 @@ function SegmentProductsPills({
   for (const item of filtered) {
     const product = catalogMap.get(item.produitId);
     const unite = product?.unite;
-    const typology = productTypologyLabel(unite);
+    const nom = product?.nom;
+    const typology = productTypologyLabel(unite, nom);
     const existing = byTypology.get(typology);
     byTypology.set(typology, {
       qty: (existing?.qty ?? 0) + item.quantite,
@@ -244,8 +245,7 @@ function SegmentProductsPills({
     .map(([typology, data]) => ({ typology, ...data }))
     .sort((a, b) => b.qty - a.qty);
 
-  const visible = groups.slice(0, 3);
-  const hiddenCount = Math.max(0, groups.length - visible.length);
+  const visible = groups.slice(0, 4);
 
   return (
     <div className="flex items-center gap-1 overflow-hidden whitespace-nowrap">
@@ -254,7 +254,8 @@ function SegmentProductsPills({
           <span
             key={`${group.typology}-${index}`}
             className={`inline-flex max-w-[8.5rem] items-center gap-1 overflow-hidden text-ellipsis rounded-full border px-1.5 py-0.5 text-label-caps ${productChipClass(
-              group.unite
+              group.unite,
+              group.typology
             )}`}
             title={`${group.qty} x ${group.typology}`}
           >
@@ -262,11 +263,6 @@ function SegmentProductsPills({
           </span>
         );
       })}
-      {hiddenCount > 0 && (
-        <span className="inline-flex items-center rounded-full border border-outline-variant bg-surface-container-low px-1.5 py-0.5 text-label-caps text-on-surface-variant">
-          +{hiddenCount}
-        </span>
-      )}
     </div>
   );
 }
