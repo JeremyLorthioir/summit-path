@@ -67,18 +67,20 @@ export default function CoursePage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_20%,rgba(15,127,255,0.12),transparent_35%),radial-gradient(circle_at_85%_0%,rgba(9,166,109,0.12),transparent_33%)]" />
-      <AppHeader
-        title={course.nom || 'Course'}
-        backHref="/dashboard"
-        actions={
-          <Link
-            href={`/course/${id}/edit`}
-            className="rounded-xl border border-outline-variant bg-surface px-4 py-2 text-label-caps uppercase text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary"
-          >
-            Éditer
-          </Link>
-        }
-      />
+      <div className={tab === 'ravito' ? 'print:hidden' : ''}>
+        <AppHeader
+          title={course.nom || 'Course'}
+          backHref="/dashboard"
+          actions={
+            <Link
+              href={`/course/${id}/edit`}
+              className="rounded-xl border border-outline-variant bg-surface px-4 py-2 text-label-caps uppercase text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary"
+            >
+              Éditer
+            </Link>
+          }
+        />
+      </div>
 
       <div className="mx-auto max-w-6xl space-y-stack-lg p-gutter md:p-8">
         <section className="grid gap-stack-md rounded-2xl border border-outline-variant/70 bg-surface/85 p-stack-lg shadow-sm backdrop-blur md:grid-cols-[1.6fr_1fr]">

@@ -103,26 +103,58 @@ export default function RavitoScreen({
 
   const productById = new Map(catalog.map((product) => [product.id, product]));
 
+  const printRows = segments.map((segment, segmentIndex) => {
+    const row = computedSegments.rows[segmentIndex];
+    const items = (segment.produits ?? []).filter((item) => item.quantite > 0);
+    const totalGlucides = items.reduce((acc, item) => {
+      const product = productById.get(item.produitId);
+      return acc + (product?.glucidesParUniteG ?? 0) * (item.quantite || 0);
+    }, 0);
+    const totalLiquide = items.reduce((acc, item) => {
+      const product = productById.get(item.produitId);
+      return acc + (product?.volumeLiquideMl ?? 0) * (item.quantite || 0);
+    }, 0);
+    const besoins = besoinsTheoriquesSegment(row?.tempsEtapeMin ?? 0, course.objectifGlucidesParHeure);
+
+    return {
+      segment,
+      row,
+      items,
+      totalGlucides,
+      totalLiquide,
+      besoins,
+    };
+  });
+
   return (
     <div className="space-y-stack-lg">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between print:hidden">
         <h2 className="text-headline-md text-on-surface">Ravitaillement (segments = ravitos)</h2>
-        <button
-          onClick={saveCourseSegments}
-          disabled={saving}
-          className="rounded-lg bg-primary px-4 py-2 text-label-caps uppercase text-on-primary hover:opacity-90 disabled:opacity-50"
-        >
-          {saving ? 'Enregistrement...' : 'Enregistrer'}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="rounded-lg border-2 border-outline-variant px-4 py-2 text-label-caps uppercase text-on-surface hover:border-primary"
+          >
+            Imprimer
+          </button>
+          <button
+            onClick={saveCourseSegments}
+            disabled={saving}
+            className="rounded-lg bg-primary px-4 py-2 text-label-caps uppercase text-on-primary hover:opacity-90 disabled:opacity-50"
+          >
+            {saving ? 'Enregistrement...' : 'Enregistrer'}
+          </button>
+        </div>
       </div>
 
       {error && (
-        <div className="rounded-lg bg-error-container px-4 py-3 text-body-md text-on-error-container">
+        <div className="rounded-lg bg-error-container px-4 py-3 text-body-md text-on-error-container print:hidden">
           {error}
         </div>
       )}
 
-      <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-stack-lg space-y-stack-md">
+      <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-stack-lg space-y-stack-md print:hidden">
         <div className="flex flex-wrap items-center justify-between gap-stack-md">
           <div>
             <h3 className="text-body-lg font-semibold text-on-surface">Catalogue produits global</h3>
@@ -142,7 +174,7 @@ export default function RavitoScreen({
         </p>
       </section>
 
-      <section className="space-y-stack-md">
+      <section className="space-y-stack-md print:hidden">
         <h3 className="text-body-lg font-semibold text-on-surface">Selection produits par segment</h3>
         {segments.length === 0 && (
           <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 text-on-surface-variant">
@@ -257,7 +289,7 @@ export default function RavitoScreen({
         })}
       </section>
 
-      <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-stack-lg space-y-stack-md">
+      <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-stack-lg space-y-stack-md print:hidden">
         <h3 className="text-body-lg font-semibold text-on-surface">Condense ravitaillement</h3>
 
         <div className="flex flex-wrap gap-stack-lg">
@@ -300,6 +332,74 @@ export default function RavitoScreen({
             </tbody>
           </table>
         </div>
+      </section>
+
+      <section className="hidden print:block print:space-y-4">
+        <h2 className="text-headline-md text-on-surface">Plan de ravitaillement - {course.nom || 'Course'}</h2>
+
+        <div className="grid grid-cols-3 gap-3 rounded-lg border border-outline-variant bg-surface-container-low p-3 text-body-md">
+          <div>
+            <span className="block text-label-caps uppercase text-on-surface-variant">Glucides plan total</span>
+            <span className="font-semibold tabular-nums text-on-surface">{Math.round(summary.totalGlucidesG)} g</span>
+          </div>
+          <div>
+            <span className="block text-label-caps uppercase text-on-surface-variant">Liquide plan total</span>
+            <span className="font-semibold tabular-nums text-on-surface">{Math.round(summary.totalLiquideMl)} ml</span>
+          </div>
+          <div>
+            <span className="block text-label-caps uppercase text-on-surface-variant">Objectif course</span>
+            <span className="font-semibold tabular-nums text-on-surface">{Math.round(objectifCourseG)} g</span>
+          </div>
+        </div>
+
+        {printRows.map((printRow, segmentIndex) => (
+          <article key={`print-segment-${printRow.segment.ordre}`} className="rounded-lg border border-outline-variant p-3">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-body-lg font-semibold text-on-surface">
+                {segmentDisplayLabel(segments, segmentIndex)}
+              </h3>
+              <span className="text-label-caps uppercase text-on-surface-variant">
+                {formatMinutes(printRow.row?.tempsEtapeMin ?? 0)}
+              </span>
+            </div>
+
+            <p className="mt-1 text-body-md text-on-surface-variant">
+              {printRow.segment.distanceKm.toFixed(1)} km · D+ {printRow.segment.dplusM} m · D- {printRow.segment.dmoinsM} m · Passage {printRow.row?.heurePassage || '-'}
+            </p>
+
+            <div className="mt-2 flex flex-wrap gap-2 text-body-md">
+              <span className="rounded-full border border-outline-variant px-2 py-0.5">
+                Glucides: <span className="font-semibold tabular-nums">{Math.round(printRow.totalGlucides)} g</span> / {Math.round(printRow.besoins.glucidesG)} g
+              </span>
+              <span className="rounded-full border border-outline-variant px-2 py-0.5">
+                Liquide: <span className="font-semibold tabular-nums">{Math.round(printRow.totalLiquide)} ml</span> / {Math.round(printRow.besoins.liquideMl)} ml
+              </span>
+            </div>
+
+            {printRow.items.length === 0 ? (
+              <p className="mt-3 text-body-md text-on-surface-variant">Aucun produit prévu.</p>
+            ) : (
+              <ul className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
+                {printRow.items.map((item, itemIndex) => {
+                  const product = productById.get(item.produitId);
+                  const perUnitGlucides = product?.glucidesParUniteG ?? 0;
+                  const perUnitLiquide = product?.volumeLiquideMl ?? 0;
+                  return (
+                    <li
+                      key={`print-item-${printRow.segment.ordre}-${itemIndex}`}
+                      className={`rounded-md border px-2 py-1 ${productChipClass(product?.unite)}`}
+                    >
+                      <span className="font-semibold">{item.quantite}x {product?.nom || 'Produit inconnu'}</span>
+                      <span className="ml-2 text-body-md">
+                        ({Math.round(item.quantite * perUnitGlucides)} g · {Math.round(item.quantite * perUnitLiquide)} ml)
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </article>
+        ))}
       </section>
     </div>
   );
